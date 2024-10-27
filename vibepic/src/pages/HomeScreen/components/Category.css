@@ -1,0 +1,14 @@
+.acccordion-summary .title {
+    font-size: 24px; 
+    color: white;
+}
+
+.accordion-details {
+    padding-top: 0;
+}
+
+.accordion-details .items {
+    text-align: left;
+    color: white;
+    margin-bottom: 15px;
+}
