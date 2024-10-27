@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
-import '../StartScreen.css';
+import '../screen/StartScreen.css';
 
 interface RegisterFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;

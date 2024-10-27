@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Slide } from '@mui/material';
 import './StartScreen.css';
-import image1 from '../../images/image-1.png';
-import image2 from '../../images/image-2.png';
-import image3 from '../../images/image-3.png';
-import LoginForm from './components/LoginForm';
-import RegisterForm from './components/RegisterForm';
+import image1 from '../../../images/image-1.png';
+import image2 from '../../../images/image-2.png';
+import image3 from '../../../images/image-3.png';
+import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 
 const StartScreen: React.FC = () => {
   const [backgroundImage, setBackgroundImage] = useState<string>('');
