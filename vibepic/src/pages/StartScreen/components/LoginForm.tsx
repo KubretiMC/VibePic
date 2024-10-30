@@ -1,55 +1,61 @@
 import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
-import '../StartScreen.css';
+import '../screen/StartScreen.css';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
+  const navigate = useNavigate();
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    navigate('/home');
+  };
 
   return (
     <Box className="modal">
         <Typography style={{fontSize: '22px'}}>Welcome to VibePic</Typography>
         <TextField
-        label="Username"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        slotProps={{
-            input: {
-            style: { color: 'white' },
-            },
-            inputLabel: {
-            style: { color: 'white' },
-            },
-        }}
+            label="Username"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            slotProps={{
+                input: {
+                style: { color: 'white' },
+                },
+                inputLabel: {
+                style: { color: 'white' },
+                },
+            }}
         />
         <TextField
-        label="Password"
-        type="password"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        slotProps={{
-            input: {
-            style: { color: 'white' },
-            },
-            inputLabel: {
-            style: { color: 'white' },
-            },
-        }}
+            label="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            slotProps={{
+                input: {
+                style: { color: 'white' },
+                },
+                inputLabel: {
+                style: { color: 'white' },
+                },
+            }}
         />
-
-        <Button variant="contained" onClick={() => ''} style={{ marginTop: '16px' }}>Login</Button>
+        <Button variant="contained" onClick={handleLogin} style={{ marginTop: '16px' }}>Login</Button>
         <Typography variant="body2" style={{ marginTop: '16px', color: 'white' }}>
-        Don’t have an account?{' '}
+            Don’t have an account?{' '}
         <Link component="button" onClick={() => setIsLoginModalOpen(false)} style={{ color: 'white' }}>
             Register
         </Link>

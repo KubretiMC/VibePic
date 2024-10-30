@@ -1,0 +1,23 @@
+.container {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  
+  .modal {
+    width: 90%;
+    max-width: 300px;
+    margin: auto;
+    margin-top: 15%;
+    padding: 16px;
+    background-color: #00A2E8;
+    box-shadow: 24px 24px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+  }
+  
