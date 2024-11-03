@@ -5,56 +5,14 @@ import image1 from '../../../images/image-1.png';
 import image2 from '../../../images/image-2.png';
 import image3 from '../../../images/image-3.png';
 import UserImage from '../components/UserImage';
-
-const imagesData = [
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image1, imageType: 'Nature', name: 'Ivan', description: 'Prosto snimka snimka', likes: 23 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-  { imagePath: image2, imageType: 'Art', name: 'Gabi', description: 'Mnogo podrobno opisanie', likes: 131 },
-  { imagePath: image3, imageType: 'City', name: 'Todor', description: 'Lqlqlqlq', likes: 13 },
-];
+import axios from 'axios';
+import { User } from '../../../models/User';
+import { Image } from '../../../models/Image';
 
 const HomeScreen: React.FC = () => {
-  const [visibleImages, setVisibleImages] = useState(imagesData.slice(0, 10));
+  const [imagesData, setImagesData] = useState<Image[]>([]);
+  const [user, setUser]= useState<User>();
+  const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -76,7 +34,25 @@ const HomeScreen: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length]);
+  }, [loading, visibleImages.length, imagesData]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/images')
+      .then(response => {
+        const images = response.data;
+        setImagesData(images);
+        setVisibleImages(images.slice(0, 10))
+      })
+      .catch(error => console.error('Error fetching images:', error));
+  }, []);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/users')
+      .then(response => {
+        setUser(response.data[0]);
+      })
+      .catch(error => console.error('Error fetching images:', error));
+  }, []);
 
   return (
     <Box display="flex">
@@ -97,8 +73,8 @@ const HomeScreen: React.FC = () => {
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {visibleImages.map((image, index) => (
-          <UserImage key={index} {...image} />
+        {visibleImages.map((image: Image, index: number) => (
+          <UserImage key={index} image={image} />
         ))}
       </Box>
     </Box>
