@@ -15,8 +15,8 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items }) => {
             <Typography className='title'>{categoryName}</Typography>
         </AccordionSummary>
         <AccordionDetails className='accordion-details'>
-            {items.map((category) => {
-                return <Typography className='items'>{category}</Typography>
+            {items.map((category, key) => {
+                return <Typography key={key} className='items'>{category}</Typography>
             })}
         </AccordionDetails>
     </Accordion>
