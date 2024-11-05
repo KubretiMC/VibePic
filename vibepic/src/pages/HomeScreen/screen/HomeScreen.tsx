@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Drawer, Box } from '@mui/material';
 import Category from '../components/Category';
-import image1 from '../../../images/image-1.png';
-import image2 from '../../../images/image-2.png';
-import image3 from '../../../images/image-3.png';
 import UserImage from '../components/UserImage';
 import axios from 'axios';
 import { User } from '../../../models/User';
@@ -11,17 +8,30 @@ import { Image } from '../../../models/Image';
 
 const HomeScreen: React.FC = () => {
   const [imagesData, setImagesData] = useState<Image[]>([]);
-  const [user, setUser]= useState<User>();
+  const [user, setUser] = useState<User>();
   const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
+  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: number]: boolean }>({});
 
   useEffect(() => {
-    const loadMoreImages = () => {
+    const loadMoreImages = async () => {
       setLoading(true);
   
-      setTimeout(() => {
+      setTimeout(async () => {
         const nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 10);
         setVisibleImages((prev) => [...prev, ...nextImages]);
+        
+        if (user) {
+          const newImageIds = nextImages.map((img) => img.id).join(',');;
+          const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
+            params: { userId: user.id, imageIds: newImageIds },
+          });
+          setLikeStatuses((prev) => ({
+            ...prev,
+            ...likeStatusResponse.data.likeStatuses,
+          }));
+        }
+        
         setLoading(false);
       }, 1000);
     };
@@ -34,25 +44,45 @@ const HomeScreen: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length, imagesData]);
+  }, [loading, visibleImages.length, imagesData, user]);
+
+  const getImages = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/images');
+      const images = response.data;
+      setImagesData(images);
+      setVisibleImages(images.slice(0, 10));
+
+      if (user) {
+        const imageIds = images.map((img: Image) => img.id).join(',');;
+        const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
+          params: { userId: user.id, imageIds },
+        });
+        setLikeStatuses(likeStatusResponse.data.likeStatuses);
+      }
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    }
+  };
+
+  const getUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/users');
+      setUser(response.data[0]);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   useEffect(() => {
-    axios.get('http://localhost:3001/images')
-      .then(response => {
-        const images = response.data;
-        setImagesData(images);
-        setVisibleImages(images.slice(0, 10))
-      })
-      .catch(error => console.error('Error fetching images:', error));
+    getUsers();
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/users')
-      .then(response => {
-        setUser(response.data[0]);
-      })
-      .catch(error => console.error('Error fetching images:', error));
-  }, []);
+    if (user) {
+      getImages();
+    }
+  }, [user]);
 
   return (
     <Box display="flex">
@@ -73,8 +103,8 @@ const HomeScreen: React.FC = () => {
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {visibleImages.map((image: Image, index: number) => (
-          <UserImage key={index} image={image} />
+        {visibleImages.map((image: Image) => (
+          <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
         ))}
       </Box>
     </Box>
