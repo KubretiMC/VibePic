@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Box } from '@mui/material';
-import Category from '../components/Category';
+import { Box } from '@mui/material';
 import UserImage from '../components/UserImage';
 import axios from 'axios';
 import { User } from '../../../models/User';
 import { Image } from '../../../models/Image';
+import DrawerComponent from '../../../components/DrawerComponent';
 
 const HomeScreen: React.FC = () => {
   const [imagesData, setImagesData] = useState<Image[]>([]);
@@ -86,22 +86,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <Box display="flex">
-      <Drawer
-        variant="permanent"
-        anchor="left"
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: 200, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
-        }}
-      >
-        <Box p={2} role="presentation">
-          <Category categoryName='Category' items={["Animals", "Nature", "Travel", "Art"]} />
-          <Category categoryName='Time' items={["This week", "Last 2 weeks", "Last month", "All time"]} />
-          <Category categoryName='Popularity' items={["Most liked images", "Most liked users"]} />
-        </Box>
-      </Drawer>
-
+      <DrawerComponent />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {visibleImages.map((image: Image) => (
           <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
