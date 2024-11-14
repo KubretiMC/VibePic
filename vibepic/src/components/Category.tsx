@@ -27,7 +27,7 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick })
                 }}
             >
                 <Typography sx={{ textAlign: 'left', width: '100%' }}>
-                    {category}
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
                 </Typography>
             </Button>
         ))}

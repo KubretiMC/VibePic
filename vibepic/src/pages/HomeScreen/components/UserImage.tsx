@@ -14,7 +14,7 @@ interface UserImageProps {
 const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => {
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
-  const userId = 1;
+  const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
 
   useEffect(() => {
     setLiked(initialLiked);

@@ -14,40 +14,19 @@ const DrawerComponent: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/groups');
+    axios.get('http://localhost:3001/groups')
+      .then(response => {
         setGroups(response.data);
-      } catch (error) {
+      })
+      .catch(error => {
         console.error('Error fetching groups:', error);
-      }
-    };
-
-    fetchGroups();
+      });
   }, []);
 
-  const handleGroupClick = async (groupName: string) => {
+  const handleGroupClick = (groupName: string) => {
     const group = groups.find(g => g.name === groupName);
     if (!group) return;
-  
-    try {
-      const response = await axios.get(`http://localhost:3001/groups/${group.id}/is-member`, {
-        params: { userId: 1 },
-      });
- 
-      if (response.data.isMember) {
-        navigate(`/groups/${groupName}`); 
-      } else {
-        await axios.post(`http://localhost:3001/groups/${group.id}/join`, {
-          userId: 1
-        });
-  
-        alert('You have successfully joined the group!');
-        navigate(`/groups/${groupName}`);
-      }
-    } catch (error) {
-      console.error('Error checking group membership or joining the group:', error);
-    }
+    navigate(`/groups/${group.id}`);
   };
 
   return (
