@@ -61,7 +61,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => 
           </Box>
 
           <Box sx={{ flexGrow: 1, textAlign: 'left', border: 1, paddingLeft: 2 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '200px', height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '220px', height: '100%', paddingRight: 1 }}>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
                   <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>

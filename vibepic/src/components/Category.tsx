@@ -1,6 +1,7 @@
 import React from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 interface CategoryProps {
     categoryName: string;
@@ -16,20 +17,23 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick })
         </AccordionSummary>
         <AccordionDetails style={{ paddingTop: 0 }} className='accordion-details'>
         {items.map((category, key) => (
-            <Button
-                key={key}
-                onClick={() => onItemClick && onItemClick(category)}
-                sx={{
-                    color: 'white',
-                    paddingLeft: 0,
-                    textTransform: 'none',
-                    display: 'block',
-                }}
-            >
-                <Typography sx={{ textAlign: 'left', width: '100%' }}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                </Typography>
-            </Button>
+            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Button
+                    onClick={() => onItemClick && onItemClick(category)}
+                    style={{
+                        color: 'white',
+                        paddingLeft: 0,
+                        textTransform: 'none',
+                    }}
+                >
+                    <Typography style={{ textAlign: 'left', width: '100%' }}>
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Typography>
+                </Button>
+                <IconButton  style={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                    <CloseOutlinedIcon style={{ color: 'white', fontSize: 18 }} />
+                </IconButton >
+            </div>
         ))}
         </AccordionDetails>
     </Accordion>

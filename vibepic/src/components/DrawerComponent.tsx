@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Drawer } from '@mui/material';
+import { Box, Button, Drawer, Typography } from '@mui/material';
 import Category from './Category';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ const DrawerComponent: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/groups')
+    axios.get('http://localhost:3001/groups/names')
       .then(response => {
         setGroups(response.data);
       })
@@ -24,15 +24,12 @@ const DrawerComponent: React.FC = () => {
   }, []);
 
   const handleGroupClick = (groupName: string) => {
-    const group = groups.find(g => g.name === groupName);
-    if (!group) return;
-    navigate(`/groups/${group.id}`);
+    navigate(`/groups/${groupName.toLowerCase()}`);
   };
 
   return (
     <Drawer
       variant="permanent"
-      anchor="left"
       sx={{
         width: 240,
         flexShrink: 0,
@@ -40,8 +37,20 @@ const DrawerComponent: React.FC = () => {
       }}
     >
       <Box p={2} role="presentation">
+      <Button
+          onClick={() => navigate(`/home`)}
+          sx={{
+              paddingLeft: 2,
+              textTransform: 'none',
+              display: 'block',
+          }}
+        >
+            <Typography style={{fontSize: 24, color: 'white'}}>
+                Home
+            </Typography>
+        </Button>
         <Category categoryName="Groups" items={groups.map(group => group.name)} onItemClick={handleGroupClick} />
-        <Category categoryName="Time" items={["This week", "Last 2 weeks", "Last month", "All time"]} />
+        <Category categoryName="Time" items={["This week", "Last week", "Week Before Last"]} />
         <Category categoryName="Popularity" items={["Most liked images", "Most liked users"]} />
       </Box>
     </Drawer>

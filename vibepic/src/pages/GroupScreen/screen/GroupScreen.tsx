@@ -7,13 +7,14 @@ import UserImage from '../../HomeScreen/components/UserImage';
 import { Image } from '../../../models/Image';
 
 const GroupScreen: React.FC = () => {
-  const { groupId = '' } = useParams<{ groupId: string }>();
+  const { groupName = '' } = useParams<{ groupName: string }>();
   const [imagesData, setImagesData] = useState<Image[]>([]);
   const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
   const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
   const [joined, setJoined] = useState(false);
   const [likeStatuses, setLikeStatuses] = useState<{ [imageId: number]: boolean }>({});
+  const [groupInfo, setGroupInfo] = useState<{name: string, description: string}>();
 
   useEffect(() => {
     const loadMoreImages = async () => {
@@ -48,11 +49,11 @@ const GroupScreen: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, visibleImages.length, imagesData]);
 
-  const checkGroupMembership = async (groupId: string) => {
-    await axios.get(`http://localhost:3001/groups/${groupId}/is-member`, { params: { userId } })
+  const checkGroupMembership = async (groupName: string) => {
+    await axios.get(`http://localhost:3001/groups/${groupName}/is-member`, { params: { userId } })
       .then(response => {
         if (response.data.isMember) {
-          getGroupImages(groupId);
+          getGroupImages(groupName);
           setJoined(true);
         }
       })
@@ -61,8 +62,8 @@ const GroupScreen: React.FC = () => {
       });
   };  
 
-  const joinGroup = async (groupId: string) => {
-    await axios.post(`http://localhost:3001/groups/${groupId}/join`, { userId })
+  const joinGroup = async (groupName: string) => {
+    await axios.post(`http://localhost:3001/groups/${groupName}/join`, { userId })
       .then(() => {
         alert('You have successfully joined the group!');
         setJoined(true);
@@ -72,10 +73,10 @@ const GroupScreen: React.FC = () => {
       });
   }
 
-  const getGroupImages = async (groupId: string) => {
+  const getGroupImages = async (groupName: string) => {
     try {
       const response = await axios.get('http://localhost:3001/images/group', {
-        params: { groupId },
+        params: { groupName },
       });
       
       const images = response.data;
@@ -97,16 +98,27 @@ const GroupScreen: React.FC = () => {
 
   useEffect(() => {
       if(joined) {
-        getGroupImages(groupId);
+        getGroupImages(groupName);
       }
   }, [joined]);
 
+  const getGroupInfo = async () => {
+    await axios.get(`http://localhost:3001/groups/${groupName}/description`)
+      .then(response => {
+        setGroupInfo(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      });
+  };
+
   useEffect(() => {
+    getGroupInfo();
     setJoined(false);
     setImagesData([]);
     setVisibleImages([]);
-    checkGroupMembership(groupId);
-  }, [groupId]);
+    checkGroupMembership(groupName);
+  }, [groupName]);
 
   return (
     <Box display="flex">
@@ -114,16 +126,25 @@ const GroupScreen: React.FC = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Typography fontSize={36}>
+              {groupInfo?.name} group
+            </Typography>
+            <Typography fontSize={24}>
+              {groupInfo?.description}
+            </Typography>
+            <Typography fontSize={18}>
+              Members: 400
+            </Typography>
            {visibleImages.map((image: Image) => (
              <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
            ))}
          </Box>
         ) : (
           <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
-            <Typography variant="h6" fontSize={36}>
+            <Typography fontSize={36}>
               You must join this group to view its photos
             </Typography>
-            <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupId)}>
+            <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
               Join Group
             </Button>
           </Box>

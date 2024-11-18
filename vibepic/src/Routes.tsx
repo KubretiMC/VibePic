@@ -8,7 +8,7 @@ const AppRoutes = () => (
     <Routes>
       <Route path="/" element={<StartScreen />} />
       <Route path="/home" element={<HomeScreen />} />
-      <Route path="/groups/:groupId" element={<GroupScreen />} />
+      <Route path="/groups/:groupName" element={<GroupScreen />} />
     </Routes>
   </Router>
 );
