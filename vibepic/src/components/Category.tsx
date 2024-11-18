@@ -7,9 +7,10 @@ interface CategoryProps {
     categoryName: string;
     items: string[];
     onItemClick?: (item: string) => void;
+    selectedProp?: string;
 }
 
-const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick }) => {
+const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, selectedProp }) => {
   return (
     <Accordion elevation={0} style={{backgroundColor: '#00A2E8'}}>
         <AccordionSummary className='acccordion-summary' expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
@@ -30,9 +31,11 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick })
                         {category.charAt(0).toUpperCase() + category.slice(1)}
                     </Typography>
                 </Button>
-                <IconButton  style={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
-                    <CloseOutlinedIcon style={{ color: 'white', fontSize: 18 }} />
-                </IconButton >
+                {category.toLowerCase() === selectedProp &&
+                    <IconButton  style={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                        <CloseOutlinedIcon style={{ color: 'white', fontSize: 18 }} />
+                    </IconButton >
+                }
             </div>
         ))}
         </AccordionDetails>
