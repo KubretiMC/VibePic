@@ -4,14 +4,9 @@ import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-interface Group {
-  id: number;
-  name: string;
-}
-
 const DrawerComponent: React.FC = () => {
   const navigate = useNavigate();
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
   
   useEffect(() => {
@@ -50,7 +45,7 @@ const DrawerComponent: React.FC = () => {
                 Home
             </Typography>
         </Button>
-        <Category categoryName="Groups" items={groups.map(group => group.name)} onItemClick={handleGroupClick} selectedProp={groupName} />
+        <Category categoryName="Groups" items={groups} onItemClick={handleGroupClick} selectedProp={groupName} />
         <Category categoryName="Time" items={["This week", "Last week", "Week Before Last"]} />
         <Category categoryName="Popularity" items={["Most liked images", "Most liked users"]} />
       </Box>

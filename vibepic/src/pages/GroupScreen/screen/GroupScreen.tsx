@@ -50,7 +50,7 @@ const GroupScreen: React.FC = () => {
   }, [loading, visibleImages.length, imagesData]);
 
   const checkGroupMembership = async (groupName: string) => {
-    await axios.get(`http://localhost:3001/groups/${groupName}/is-member`, { params: { userId } })
+    await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { params: { userId } })
       .then(response => {
         if (response.data.isMember) {
           getGroupImages(groupName);
@@ -63,7 +63,7 @@ const GroupScreen: React.FC = () => {
   };  
 
   const joinGroup = async (groupName: string) => {
-    await axios.post(`http://localhost:3001/groups/${groupName}/join`, { userId })
+    await axios.post(`http://localhost:3001/user-groups/${groupName}/join`, { userId })
       .then(() => {
         alert('You have successfully joined the group!');
         setJoined(true);
@@ -135,9 +135,13 @@ const GroupScreen: React.FC = () => {
             <Typography fontSize={18}>
               Members: 400
             </Typography>
-           {visibleImages.map((image: Image) => (
-             <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
-           ))}
+            {visibleImages.length > 0 ?
+              visibleImages.map((image: Image) => (
+                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+              ))
+              :
+              <Typography style={{marginTop: 180, fontSize: 28}}>No images in this group</Typography>
+            }
          </Box>
         ) : (
           <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">

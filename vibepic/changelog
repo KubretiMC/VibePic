@@ -1,7 +1,11 @@
-## [1.4.0] - 2024-19-03
+## [1.4.1] - 2024-11-19
+- endpoints for groups adjusted based on backend changes
+- made to show Text if a group doesn't'have any images
+
+## [1.4.0] - 2024-11-19
 - made to show images based on group that the user joined
 
-## [1.3.0] - 2024-11-03
+## [1.3.0] - 2024-11-06
 - likes connected to the backend
 - some code cleanups made
 
