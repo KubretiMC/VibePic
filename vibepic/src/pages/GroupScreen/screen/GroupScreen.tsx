@@ -5,6 +5,7 @@ import DrawerComponent from '../../../components/DrawerComponent';
 import axios from 'axios';
 import UserImage from '../../HomeScreen/components/UserImage';
 import { Image } from '../../../models/Image';
+import { Group } from '../../../models/Group';
 
 const GroupScreen: React.FC = () => {
   const { groupName = '' } = useParams<{ groupName: string }>();
@@ -13,8 +14,8 @@ const GroupScreen: React.FC = () => {
   const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
   const [joined, setJoined] = useState(false);
-  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: number]: boolean }>({});
-  const [groupInfo, setGroupInfo] = useState<{name: string, description: string}>();
+  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
+  const [groupInfo, setGroupInfo] = useState<Group>();
 
   useEffect(() => {
     const loadMoreImages = async () => {
@@ -82,19 +83,10 @@ const GroupScreen: React.FC = () => {
       const images = response.data;
       setImagesData(images);
       setVisibleImages(images.slice(0, 10));
-  
-      if (userId) {
-        const imageIds = images.map((img: Image) => img.id).join(',');
-        const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-          params: { userId, imageIds },
-        });
-        setLikeStatuses(likeStatusResponse.data.likeStatuses);
-      }
     } catch (error) {
       console.error('Error fetching images:', error);
     }
   };
-  
 
   useEffect(() => {
       if(joined) {
@@ -103,7 +95,7 @@ const GroupScreen: React.FC = () => {
   }, [joined]);
 
   const getGroupInfo = async () => {
-    await axios.get(`http://localhost:3001/groups/${groupName}/description`)
+    await axios.get(`http://localhost:3001/user-groups/${groupName}/details`)
       .then(response => {
         setGroupInfo(response.data);
       })
@@ -133,7 +125,7 @@ const GroupScreen: React.FC = () => {
               {groupInfo?.description}
             </Typography>
             <Typography fontSize={18}>
-              Members: 400
+              Members: {groupInfo?.memberCount}
             </Typography>
             {visibleImages.length > 0 ?
               visibleImages.map((image: Image) => (

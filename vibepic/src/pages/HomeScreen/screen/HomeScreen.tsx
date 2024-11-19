@@ -9,7 +9,7 @@ const HomeScreen: React.FC = () => {
   const [imagesData, setImagesData] = useState<Image[]>([]);
   const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
-  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: number]: boolean }>({});
+  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
 
   useEffect(() => {
     const loadMoreImages = async () => {

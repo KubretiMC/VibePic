@@ -1,5 +1,5 @@
 export interface Image {
-    id: number;
+    id: string;
     createdAt: Date;
     description: string;
     imagePath: string;
