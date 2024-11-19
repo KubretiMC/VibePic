@@ -1,11 +1,13 @@
-## [1.2.0] - 2024-11-03
+## [1.4.0] - 2024-19-03
+- made to show images based on group that the user joined
+
+## [1.3.0] - 2024-11-03
 - likes connected to the backend
 - some code cleanups made
 
 ## [1.2.0] - 2024-11-03
-- models for images and users mde
+- models for images and users made
 - showing images from the server made
-
 
 ## [1.1.0] - 2024-10-24
 - Home screen drawer made
