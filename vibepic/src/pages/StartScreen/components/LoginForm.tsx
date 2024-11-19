@@ -22,34 +22,32 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
         <Typography style={{fontSize: '22px'}}>Welcome to VibePic</Typography>
         <TextField
             label="Username"
-            variant="outlined"
             fullWidth
             margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             slotProps={{
                 input: {
-                style: { color: 'white' },
+                    style: { color: 'white' },
                 },
                 inputLabel: {
-                style: { color: 'white' },
+                    style: { color: 'white' },
                 },
             }}
         />
         <TextField
             label="Password"
             type="password"
-            variant="outlined"
             fullWidth
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             slotProps={{
                 input: {
-                style: { color: 'white' },
+                    style: { color: 'white' },
                 },
                 inputLabel: {
-                style: { color: 'white' },
+                    style: { color: 'white' },
                 },
             }}
         />

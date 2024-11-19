@@ -14,7 +14,7 @@ interface UserImageProps {
 const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => {
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
-  const userId = 1;
+  const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
 
   useEffect(() => {
     setLiked(initialLiked);
@@ -61,7 +61,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => 
           </Box>
 
           <Box sx={{ flexGrow: 1, textAlign: 'left', border: 1, paddingLeft: 2 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '200px', height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '220px', height: '100%', paddingRight: 1 }}>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
                   <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>
