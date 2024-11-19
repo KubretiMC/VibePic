@@ -1,3 +1,8 @@
+## [1.4.2] - 2024-11-19
+- changed image and user ids from number to string
+- group interface made for the group info
+- members count fixed to show the info properly
+
 ## [1.4.1] - 2024-11-19
 - endpoints for groups adjusted based on backend changes
 - made to show Text if a group doesn't'have any images
