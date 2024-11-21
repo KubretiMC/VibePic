@@ -10,6 +10,7 @@ const HomeScreen: React.FC = () => {
   const [visibleImages, setVisibleImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
   const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
+  const [dateFilter, setDateFilter] = useState('');
 
   useEffect(() => {
     const loadMoreImages = async () => {
@@ -41,9 +42,11 @@ const HomeScreen: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, visibleImages.length, imagesData]);
 
-  const getImages = async () => {
+  const getImages = async (week?: string) => {
     try {
-      const response = await axios.get('http://localhost:3001/images');
+      const response = await axios.get('http://localhost:3001/images',  {
+        params: { week: week || undefined },
+      });
       const images = response.data;
       setImagesData(images);
       setVisibleImages(images.slice(0, 10));
@@ -58,12 +61,12 @@ const HomeScreen: React.FC = () => {
   };
 
   useEffect(() => {
-      getImages();
-  }, []);
+      getImages(dateFilter);
+  }, [dateFilter]);
 
   return (
     <Box display="flex">
-      <DrawerComponent />
+      <DrawerComponent dateFilter={dateFilter} setDateFilter={setDateFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {visibleImages.map((image: Image) => (
           <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
