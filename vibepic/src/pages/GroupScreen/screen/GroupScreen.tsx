@@ -16,7 +16,8 @@ const GroupScreen: React.FC = () => {
   const [joined, setJoined] = useState(false);
   const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
   const [groupInfo, setGroupInfo] = useState<Group>();
-
+  const [dateFilter, setDateFilter] = useState('');
+  
   useEffect(() => {
     const loadMoreImages = async () => {
       setLoading(true);
@@ -74,10 +75,10 @@ const GroupScreen: React.FC = () => {
       });
   }
 
-  const getGroupImages = async (groupName: string) => {
+  const getGroupImages = async (groupName: string, week?: string) => {
     try {
       const response = await axios.get('http://localhost:3001/images/group', {
-        params: { groupName },
+        params: { groupName, week: week || undefined },
       });
       
       const images = response.data;
@@ -90,9 +91,9 @@ const GroupScreen: React.FC = () => {
 
   useEffect(() => {
       if(joined) {
-        getGroupImages(groupName);
+        getGroupImages(groupName, dateFilter);
       }
-  }, [joined]);
+  }, [joined, dateFilter]);
 
   const getGroupInfo = async () => {
     await axios.get(`http://localhost:3001/user-groups/${groupName}/details`)
@@ -109,12 +110,13 @@ const GroupScreen: React.FC = () => {
     setJoined(false);
     setImagesData([]);
     setVisibleImages([]);
+    setDateFilter('');
     checkGroupMembership(groupName);
   }, [groupName]);
 
   return (
     <Box display="flex">
-      <DrawerComponent />
+      <DrawerComponent dateFilter={dateFilter} setDateFilter={setDateFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

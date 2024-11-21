@@ -4,7 +4,22 @@ import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const DrawerComponent: React.FC = () => {
+const timeFilterDisplayNames: {
+  'This Week': string;
+  'Last Week': string;
+  'Week Before Last': string;
+} = {
+  'This Week': 'this',
+  'Last Week': 'last',
+  'Week Before Last': 'beforeLast',
+};
+
+interface DrawerComponentProps {
+  dateFilter: string;
+  setDateFilter: (dateFilter: string) => void;
+}
+
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, setDateFilter }) => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
@@ -23,13 +38,18 @@ const DrawerComponent: React.FC = () => {
     navigate(`/groups/${groupName.toLowerCase()}`);
   };
 
+  const getKeyFromValue = (value: string) => {
+    return (Object.keys(timeFilterDisplayNames) as Array<keyof typeof timeFilterDisplayNames>)
+      .find(key => timeFilterDisplayNames[key] === value);
+  };
+
   return (
     <Drawer
       variant="permanent"
       sx={{
         width: 240,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 220, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+        [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
       }}
     >
       <Box p={2} role="presentation">
@@ -45,9 +65,22 @@ const DrawerComponent: React.FC = () => {
                 Home
             </Typography>
         </Button>
-        <Category categoryName="Groups" items={groups} onItemClick={handleGroupClick} selectedProp={groupName} />
-        <Category categoryName="Time" items={["This week", "Last week", "Week Before Last"]} />
-        <Category categoryName="Popularity" items={["Most liked images", "Most liked users"]} />
+        <Category 
+          categoryName="Groups" 
+          items={groups} 
+          onItemClick={handleGroupClick} 
+          selectedProp={groupName} 
+        />
+        <Category 
+          categoryName="Time" 
+          items={Object.keys(timeFilterDisplayNames)} 
+          onItemClick={(item) => setDateFilter(timeFilterDisplayNames[item as 'This Week' | 'Last Week' | 'Week Before Last'])} 
+          selectedProp={getKeyFromValue(dateFilter)} 
+        />
+        <Category 
+          categoryName="Popularity" 
+          items={["Most liked images", "Most liked users"]} 
+        />
       </Box>
     </Drawer>
   );

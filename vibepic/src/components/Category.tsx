@@ -31,7 +31,7 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, s
                         {category.charAt(0).toUpperCase() + category.slice(1)}
                     </Typography>
                 </Button>
-                {category.toLowerCase() === selectedProp &&
+                {category.toLowerCase() === selectedProp?.toLowerCase() &&
                     <IconButton  style={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CloseOutlinedIcon style={{ color: 'white', fontSize: 18 }} />
                     </IconButton >
