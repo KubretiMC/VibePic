@@ -11,10 +11,6 @@ const HomeScreen: React.FC = () => {
     '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
   );
 
-  useEffect(() => {
-    console.log('512521512');
-  }, [visibleImages]);
-
   return (
     <Box display="flex">
       <DrawerComponent dateFilter={dateFilter} likedFilter={likedFilter} updateDateFilter={updateDateFilter} updateLikeFilter={updateLikeFilter} />
