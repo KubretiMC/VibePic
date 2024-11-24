@@ -1,3 +1,7 @@
+## [1.5.1] - 2024-11-24
+- fixed a bug where choosing group closed the group Accordion 
+- made unselecting groups/times
+
 ## [1.5.0] - 2024-11-21
 - made image time filtering
 

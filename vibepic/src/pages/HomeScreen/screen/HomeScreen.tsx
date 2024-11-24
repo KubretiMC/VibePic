@@ -64,9 +64,17 @@ const HomeScreen: React.FC = () => {
       getImages(dateFilter);
   }, [dateFilter]);
 
+  const updateDateFilter = (newDateFilter: string) => {
+    if(dateFilter === newDateFilter) {
+      setDateFilter('');
+    } else {
+      setDateFilter(newDateFilter);
+    }
+  }
+
   return (
     <Box display="flex">
-      <DrawerComponent dateFilter={dateFilter} setDateFilter={setDateFilter} />
+      <DrawerComponent dateFilter={dateFilter} updateDateFilter={updateDateFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {visibleImages.map((image: Image) => (
           <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
