@@ -6,51 +6,28 @@ import axios from 'axios';
 import UserImage from '../../HomeScreen/components/UserImage';
 import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
+import { useImageLoader } from '../../../hooks/useImageLoader';
 
 const GroupScreen: React.FC = () => {
   const { groupName = '' } = useParams<{ groupName: string }>();
-  const [imagesData, setImagesData] = useState<Image[]>([]);
   const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
-  const [visibleImages, setVisibleImages] = useState<Image[]>([]);
-  const [loading, setLoading] = useState(false);
   const [joined, setJoined] = useState(false);
-  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
   const [groupInfo, setGroupInfo] = useState<Group>();
-  const [dateFilter, setDateFilter] = useState('');
-  const [likedFilter, setLikedFilter] = useState('');
 
-  useEffect(() => {
-    const loadMoreImages = async () => {
-      setLoading(true);
-  
-      setTimeout(async () => {
-        const nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 10);
-        setVisibleImages((prev) => [...prev, ...nextImages]);
-        
-        if (userId) {
-          const newImageIds = nextImages.map((img) => img.id).join(',');;
-          const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-            params: { userId, imageIds: newImageIds },
-          });
-          setLikeStatuses((prev) => ({
-            ...prev,
-            ...likeStatusResponse.data.likeStatuses,
-          }));
-        }
-        
-        setLoading(false);
-      }, 1000);
-    };
-
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading) {
-        loadMoreImages();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length, imagesData]);
+  const { 
+    visibleImages, 
+    likeStatuses, 
+    dateFilter, 
+    likedFilter, 
+    getImages, 
+    updateDateFilter, 
+    updateLikeFilter, 
+    setVisibleImages, 
+    setImagesData 
+  } = useImageLoader(
+    `http://localhost:3001/images/group`,
+    '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
+  );
 
   const joinGroup = async (groupName: string) => {
     await axios.post(`http://localhost:3001/user-groups/${groupName}/join`, { userId })
@@ -63,32 +40,9 @@ const GroupScreen: React.FC = () => {
       });
   }
 
-  const getGroupImages = async (groupName: string, week?: string, mostLiked?: string) => {
-    try {
-      const response = await axios.get('http://localhost:3001/images/group', {
-        params: { 
-          groupName, 
-          week: week || undefined, 
-          mostLiked: mostLiked || undefined
-        },
-      });
-      
-      const images = response.data;
-      setImagesData(images);
-      setVisibleImages(images.slice(0, 10));
-      const imageIds = images.map((img: Image) => img.id).join(',');;
-      const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds },
-      });
-      setLikeStatuses(likeStatusResponse.data.likeStatuses);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  };
-
   useEffect(() => {
       if(joined) {
-        getGroupImages(groupName, dateFilter, likedFilter);
+        getImages(dateFilter, likedFilter, groupName);
       }
   }, [joined, dateFilter, groupName, likedFilter]);
 
@@ -97,7 +51,7 @@ const GroupScreen: React.FC = () => {
       await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { params: { userId } })
         .then(response => {
           if (response.data.isMember) {
-            getGroupImages(groupName);
+            getImages('','',groupName);
             setJoined(true);
           }
         })
@@ -122,23 +76,6 @@ const GroupScreen: React.FC = () => {
     setVisibleImages([]);
     checkGroupMembership(groupName);
   }, [groupName]);
-
-  const updateDateFilter = (newDateFilter: string) => {
-    if(dateFilter === newDateFilter) {
-      setDateFilter('');
-    } else {
-      setDateFilter(newDateFilter);
-    }
-  }
-
-  
-  const updateLikeFilter = (newLikeFilter: string) => {
-    if(likedFilter === newLikeFilter) {
-      setLikedFilter('');
-    } else {
-      setLikedFilter('images');
-    }
-  }
 
   return (
     <Box display="flex">

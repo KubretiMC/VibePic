@@ -25,7 +25,7 @@ export const useImageLoader = (
       setVisibleImages((prev) => [...prev, ...nextImages]); 
       const newImageIds = nextImages.map((img) => img.id).join(',');;
       const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds: newImageIds },
+        params: { userId, imageIds: newImageIds },
       });
       setLikeStatuses((prev) => ({
         ...prev,
@@ -45,12 +45,13 @@ export const useImageLoader = (
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, visibleImages.length, imagesData]);
 
-  const getImages = async (week?: string, mostLiked?: string) => {
+  const getImages = async (week?: string, mostLiked?: string, groupName?: string) => {
     try {
-      const response = await axios.get('http://localhost:3001/images',  {
+      const response = await axios.get(endpoint,  {
         params: { 
           week: week || undefined, 
-          mostLiked: mostLiked || undefined
+          mostLiked: mostLiked || undefined,
+          groupName: groupName || undefined
         },
       });
       const images = response.data;
@@ -58,7 +59,7 @@ export const useImageLoader = (
       setVisibleImages(images.slice(0, 10));
       const imageIds = images.map((img: Image) => img.id).join(',');;
       const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds },
+        params: { userId, imageIds },
       });
       setLikeStatuses(likeStatusResponse.data.likeStatuses);
     } catch (error) {
@@ -92,9 +93,10 @@ export const useImageLoader = (
     likeStatuses,
     dateFilter,
     likedFilter,
-    setDateFilter,
-    setLikedFilter,
+    getImages,
     updateDateFilter,
-    updateLikeFilter
+    updateLikeFilter,
+    setVisibleImages,
+    setImagesData
   };
 };
