@@ -17,7 +17,8 @@ const GroupScreen: React.FC = () => {
   const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
   const [groupInfo, setGroupInfo] = useState<Group>();
   const [dateFilter, setDateFilter] = useState('');
-  
+  const [likedFilter, setLikedFilter] = useState('');
+
   useEffect(() => {
     const loadMoreImages = async () => {
       setLoading(true);
@@ -51,19 +52,6 @@ const GroupScreen: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, visibleImages.length, imagesData]);
 
-  const checkGroupMembership = async (groupName: string) => {
-    await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { params: { userId } })
-      .then(response => {
-        if (response.data.isMember) {
-          getGroupImages(groupName);
-          setJoined(true);
-        }
-      })
-      .catch(error => {
-        console.error('Error checking group membership:', error);
-      });
-  };  
-
   const joinGroup = async (groupName: string) => {
     await axios.post(`http://localhost:3001/user-groups/${groupName}/join`, { userId })
       .then(() => {
@@ -75,10 +63,14 @@ const GroupScreen: React.FC = () => {
       });
   }
 
-  const getGroupImages = async (groupName: string, week?: string) => {
+  const getGroupImages = async (groupName: string, week?: string, mostLiked?: string) => {
     try {
       const response = await axios.get('http://localhost:3001/images/group', {
-        params: { groupName, week: week || undefined },
+        params: { 
+          groupName, 
+          week: week || undefined, 
+          mostLiked: mostLiked || undefined
+        },
       });
       
       const images = response.data;
@@ -96,21 +88,34 @@ const GroupScreen: React.FC = () => {
 
   useEffect(() => {
       if(joined) {
-        getGroupImages(groupName, dateFilter);
+        getGroupImages(groupName, dateFilter, likedFilter);
       }
-  }, [joined, dateFilter]);
-
-  const getGroupInfo = async () => {
-    await axios.get(`http://localhost:3001/user-groups/${groupName}/details`)
-      .then(response => {
-        setGroupInfo(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching groups:', error);
-      });
-  };
+  }, [joined, dateFilter, groupName, likedFilter]);
 
   useEffect(() => {
+    const checkGroupMembership = async (groupName: string) => {
+      await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { params: { userId } })
+        .then(response => {
+          if (response.data.isMember) {
+            getGroupImages(groupName);
+            setJoined(true);
+          }
+        })
+        .catch(error => {
+          console.error('Error checking group membership:', error);
+        });
+    };  
+
+    const getGroupInfo = async () => {
+      await axios.get(`http://localhost:3001/user-groups/${groupName}/details`)
+        .then(response => {
+          setGroupInfo(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching groups:', error);
+        });
+    };
+
     getGroupInfo();
     setJoined(false);
     setImagesData([]);
@@ -126,9 +131,18 @@ const GroupScreen: React.FC = () => {
     }
   }
 
+  
+  const updateLikeFilter = (newLikeFilter: string) => {
+    if(likedFilter === newLikeFilter) {
+      setLikedFilter('');
+    } else {
+      setLikedFilter('images');
+    }
+  }
+
   return (
     <Box display="flex">
-      <DrawerComponent dateFilter={dateFilter} updateDateFilter={updateDateFilter} />
+      <DrawerComponent dateFilter={dateFilter} updateDateFilter={updateDateFilter} likedFilter={likedFilter} updateLikeFilter={updateLikeFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

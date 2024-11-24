@@ -1,3 +1,6 @@
+## [1.6.0] - 2024-11-24
+- popularity filtering made for the images
+
 ## [1.5.1] - 2024-11-24
 - fixed a bug where choosing group closed the group Accordion 
 - made unselecting groups/times
