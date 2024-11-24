@@ -18,25 +18,16 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, s
         </AccordionSummary>
         <AccordionDetails style={{ paddingTop: 0 }} className='accordion-details'>
         {items.map((category, key) => (
-            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <Button
-                    onClick={() => onItemClick && onItemClick(category)}
-                    style={{
-                        color: 'white',
-                        paddingLeft: 0,
-                        textTransform: 'none',
-                    }}
-                >
-                    <Typography style={{ textAlign: 'left', width: '100%' }}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </Typography>
-                </Button>
+            <Button key={key} style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 0 }}  onClick={() => onItemClick && onItemClick(category)}>
+                <Typography style={{ textAlign: 'left', width: '100%', color: 'white', textTransform: 'none', }}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                </Typography>
                 {category.toLowerCase() === selectedProp?.toLowerCase() &&
                     <IconButton  style={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CloseOutlinedIcon style={{ color: 'white', fontSize: 18 }} />
                     </IconButton >
                 }
-            </div>
+            </Button>
         ))}
         </AccordionDetails>
     </Accordion>

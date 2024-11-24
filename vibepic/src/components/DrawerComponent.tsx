@@ -17,9 +17,11 @@ const timeFilterDisplayNames: {
 interface DrawerComponentProps {
   dateFilter: string;
   updateDateFilter: (dateFilter: string) => void;
+  likedFilter: string;
+  updateLikeFilter: (likeFilter: string) => void;
 }
 
-const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, updateDateFilter }) => {
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter }) => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
@@ -83,7 +85,9 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, updateDat
         />
         <Category 
           categoryName="Popularity" 
-          items={["Most liked images", "Most liked users"]} 
+          items={["Most liked images"]} 
+          onItemClick={() => updateLikeFilter('images')} 
+          selectedProp={likedFilter && 'Most liked images'} 
         />
       </Box>
     </Drawer>
