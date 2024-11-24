@@ -1,88 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
 import UserImage from '../components/UserImage';
-import axios from 'axios';
 import { Image } from '../../../models/Image';
 import DrawerComponent from '../../../components/DrawerComponent';
+import { useImageLoader } from '../../../hooks/useImageLoader';
 
 const HomeScreen: React.FC = () => {
-  const [imagesData, setImagesData] = useState<Image[]>([]);
-  const [visibleImages, setVisibleImages] = useState<Image[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
-  const [dateFilter, setDateFilter] = useState('');
-  const [likedFilter, setLikedFilter] = useState('');
+  const { visibleImages, likeStatuses, dateFilter, likedFilter, updateDateFilter, updateLikeFilter } = useImageLoader(
+    `http://localhost:3001/images`,
+    '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
+  );
 
   useEffect(() => {
-    const loadMoreImages = async () => {
-      setLoading(true);
-  
-      setTimeout(async () => {
-        const nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 10);
-        setVisibleImages((prev) => [...prev, ...nextImages]); 
-        const newImageIds = nextImages.map((img) => img.id).join(',');;
-        const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-          params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds: newImageIds },
-        });
-        setLikeStatuses((prev) => ({
-          ...prev,
-          ...likeStatusResponse.data.likeStatuses,
-        }));
-        
-        setLoading(false);
-      }, 1000);
-    };
-
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading) {
-        loadMoreImages();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length, imagesData]);
-
-  const getImages = async (week?: string, mostLiked?: string) => {
-    try {
-      const response = await axios.get('http://localhost:3001/images',  {
-        params: { 
-          week: week || undefined, 
-          mostLiked: mostLiked || undefined
-        },
-      });
-      const images = response.data;
-      setImagesData(images);
-      setVisibleImages(images.slice(0, 10));
-      const imageIds = images.map((img: Image) => img.id).join(',');;
-      const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds },
-      });
-      setLikeStatuses(likeStatusResponse.data.likeStatuses);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  };
-
-  useEffect(() => {
-      getImages(dateFilter, likedFilter);
-  }, [dateFilter, likedFilter]);
-
-  const updateDateFilter = (newDateFilter: string) => {
-    if(dateFilter === newDateFilter) {
-      setDateFilter('');
-    } else {
-      setDateFilter(newDateFilter);
-    }
-  }
-
-  const updateLikeFilter = (newLikeFilter: string) => {
-    if(likedFilter === newLikeFilter) {
-      setLikedFilter('');
-    } else {
-      setLikedFilter('images');
-    }
-  }
+    console.log('512521512');
+  }, [visibleImages]);
 
   return (
     <Box display="flex">
