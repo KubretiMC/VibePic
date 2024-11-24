@@ -12,7 +12,7 @@ interface CategoryProps {
 
 const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, selectedProp }) => {
   return (
-    <Accordion elevation={0} style={{backgroundColor: '#00A2E8'}}>
+    <Accordion elevation={0} style={{backgroundColor: '#00A2E8'}} defaultExpanded={!!selectedProp}>
         <AccordionSummary className='acccordion-summary' expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
             <Typography fontSize={24} color='white'>{categoryName}</Typography>
         </AccordionSummary>

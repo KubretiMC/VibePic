@@ -16,10 +16,10 @@ const timeFilterDisplayNames: {
 
 interface DrawerComponentProps {
   dateFilter: string;
-  setDateFilter: (dateFilter: string) => void;
+  updateDateFilter: (dateFilter: string) => void;
 }
 
-const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, setDateFilter }) => {
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, updateDateFilter }) => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
@@ -34,8 +34,12 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, setDateFi
       });
   }, []);
 
-  const handleGroupClick = (groupName: string) => {
-    navigate(`/groups/${groupName.toLowerCase()}`);
+  const handleGroupClick = (group: string) => {
+    if(groupName ===  group.toLowerCase()) {
+      navigate('/home');
+    } else {
+      navigate(`/groups/${group.toLowerCase()}`);
+    }
   };
 
   const getKeyFromValue = (value: string) => {
@@ -74,7 +78,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, setDateFi
         <Category 
           categoryName="Time" 
           items={Object.keys(timeFilterDisplayNames)} 
-          onItemClick={(item) => setDateFilter(timeFilterDisplayNames[item as 'This Week' | 'Last Week' | 'Week Before Last'])} 
+          onItemClick={(item) => updateDateFilter(timeFilterDisplayNames[item as 'This Week' | 'Last Week' | 'Week Before Last'])} 
           selectedProp={getKeyFromValue(dateFilter)} 
         />
         <Category 

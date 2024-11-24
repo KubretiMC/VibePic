@@ -84,6 +84,11 @@ const GroupScreen: React.FC = () => {
       const images = response.data;
       setImagesData(images);
       setVisibleImages(images.slice(0, 10));
+      const imageIds = images.map((img: Image) => img.id).join(',');;
+      const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
+        params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09', imageIds },
+      });
+      setLikeStatuses(likeStatusResponse.data.likeStatuses);
     } catch (error) {
       console.error('Error fetching images:', error);
     }
@@ -110,13 +115,20 @@ const GroupScreen: React.FC = () => {
     setJoined(false);
     setImagesData([]);
     setVisibleImages([]);
-    setDateFilter('');
     checkGroupMembership(groupName);
   }, [groupName]);
 
+  const updateDateFilter = (newDateFilter: string) => {
+    if(dateFilter === newDateFilter) {
+      setDateFilter('');
+    } else {
+      setDateFilter(newDateFilter);
+    }
+  }
+
   return (
     <Box display="flex">
-      <DrawerComponent dateFilter={dateFilter} setDateFilter={setDateFilter} />
+      <DrawerComponent dateFilter={dateFilter} updateDateFilter={updateDateFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
