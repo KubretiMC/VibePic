@@ -1,3 +1,7 @@
+## [1.7.0] - 2024-11-26
+- made to show liked images on profile screen
+- made to show uploaded images on profile screen
+
 ## [1.6.1] - 2024-11-24
 - group and home screens simplified by creating custom hook
 - custom hook made

@@ -7,6 +7,7 @@ import UserImage from '../../HomeScreen/components/UserImage';
 import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
 import { useImageLoader } from '../../../hooks/useImageLoader';
+import UserDropdown from '../../../components/UserDropdown';
 
 const GroupScreen: React.FC = () => {
   const { groupName = '' } = useParams<{ groupName: string }>();
@@ -83,6 +84,7 @@ const GroupScreen: React.FC = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <UserDropdown />
             <Typography fontSize={36}>
               {groupInfo?.name} group
             </Typography>

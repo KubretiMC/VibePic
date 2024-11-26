@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import UserImage from '../components/UserImage';
 import { Image } from '../../../models/Image';
 import DrawerComponent from '../../../components/DrawerComponent';
 import { useImageLoader } from '../../../hooks/useImageLoader';
+import UserDropdown from '../../../components/UserDropdown';
 
 const HomeScreen: React.FC = () => {
   const { visibleImages, likeStatuses, dateFilter, likedFilter, updateDateFilter, updateLikeFilter } = useImageLoader(
@@ -15,6 +16,7 @@ const HomeScreen: React.FC = () => {
     <Box display="flex">
       <DrawerComponent dateFilter={dateFilter} likedFilter={likedFilter} updateDateFilter={updateDateFilter} updateLikeFilter={updateLikeFilter} />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <UserDropdown />
         {visibleImages.map((image: Image) => (
           <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
         ))}
