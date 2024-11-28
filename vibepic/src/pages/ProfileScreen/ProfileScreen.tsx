@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DrawerComponent from '../../components/DrawerComponent';
 import { useImageLoader } from '../../hooks/useImageLoader';
 import axios from 'axios';
+import Cropper, { ReactCropperElement } from "react-cropper";
+import "cropperjs/dist/cropper.css";
 
 interface Image {
   id: string;
@@ -68,6 +70,30 @@ const ProfileScreen: React.FC = () => {
     setSelectedImage(null);
   };
 
+  const [image, setImage] = useState('');
+  const [cropData, setCropData] = useState('');
+  const cropperRef = useRef<ReactCropperElement>(null);
+  const onChange = (e: any) => {
+    e.preventDefault();
+    let files;
+    if (e.target) {
+      files = e.target.files;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as any);
+    };
+    reader.readAsDataURL(files[0]);
+  };
+
+  const getCropData = (e: any) => {
+    if (typeof cropperRef.current?.cropper !== "undefined") {
+      e.preventDefault();
+      setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+      setImage('');
+    }
+  };
+
   return (
     <Box display="flex">
       <DrawerComponent
@@ -86,18 +112,48 @@ const ProfileScreen: React.FC = () => {
           alignItems: 'center',
         }}
       >
-        <AccountCircleIcon sx={{ color: 'red', fontSize: 280, marginBottom: 2 }} />
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography variant="h4" fontWeight="bold" marginTop={5}>
           Mariqnko
         </Typography>
-        <Button
-          variant="outlined"
-          color="primary"
-          sx={{ marginBottom: 4 }}
-        >
-          Change Image
-        </Button>
-
+        {image ?
+          <Cropper
+            style={{ maxHeight: 600, maxWidth: 400 }}
+            src={image}
+            ref={cropperRef}
+            minCropBoxHeight={200}
+            minCropBoxWidth={200}
+            responsive={true}
+          />
+          :
+          cropData ?
+            <img style={{ width: "220px", height: "220px" }} src={cropData} alt="cropped" />
+            :
+            <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
+        }
+        {image ?
+          <Button
+            color="primary"
+            sx={{ textTransform: 'none', fontSize: 18 }}
+            component="label"
+            onClick={getCropData}
+          >
+            Crop Image
+          </Button>
+        :
+          <Button
+            color="primary"
+            sx={{ textTransform: 'none', fontSize: 18 }}
+            component="label"
+          >
+            Change Image
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={onChange}
+            />
+          </Button>
+        }
         <Box sx={{ width: '100%' }}>
           <Tabs
             value={activeTab}
@@ -112,48 +168,25 @@ const ProfileScreen: React.FC = () => {
         </Box>
 
         <Box sx={{ marginTop: 4, width: '80%' }}>
-          {activeTab === 0 && (
-            <Grid2 container spacing={2} justifyContent="center">
-              {images.map((image) => (
-                <Grid2 key={image.id} size={{ xs:12, sm: 6, md:4 }}>
-                  <Box
-                    component="img"
-                    src={image.imagePath}
-                    alt={image.description}
-                    sx={{
-                      width: '100%',
-                      height: '200px',
-                      objectFit: 'cover',
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleImageClick(image)}
-                  />
-                </Grid2>
-              ))}
-            </Grid2>
-          )}
-          {activeTab === 1 && (
-            <Grid2 container spacing={2} justifyContent="center">
-              {images.map((image) => (
-                <Grid2 key={image.id} size={{ xs:12, sm: 6, md:4 }}>
-                  <Box
-                    component="img"
-                    src={image.imagePath}
-                    alt={image.description}
-                    sx={{
-                      width: '100%',
-                      height: '200px',
-                      objectFit: 'cover',
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleImageClick(image)}
-                  />
-                </Grid2>
-              ))}
-            </Grid2>
-          )}
+          <Grid2 container spacing={2} justifyContent="center">
+            {images.map((image) => (
+              <Grid2 key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box
+                  component="img"
+                  src={image.imagePath}
+                  alt={image.description}
+                  sx={{
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover',
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleImageClick(image)}
+                />
+              </Grid2>
+            ))}
+          </Grid2>
         </Box>
 
         <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg">
