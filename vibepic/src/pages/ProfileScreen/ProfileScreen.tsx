@@ -6,6 +6,7 @@ import { useImageLoader } from '../../hooks/useImageLoader';
 import axios from 'axios';
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { User } from '../../models/User';
 
 interface Image {
   id: string;
@@ -19,6 +20,7 @@ interface Image {
 const ProfileScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<Image[]>([]);
+  const [user, setUser] = useState<User>();
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -30,6 +32,18 @@ const ProfileScreen: React.FC = () => {
     `http://localhost:3001/images`,
     '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
   );
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/users/59995a1b-a2c6-11ef-aafe-8c1645e72e09`);
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching personal images:', error);
+      }
+    };
+    getUserInfo();
+  }, []);
 
   useEffect(() => {
     const fetchImagesByUploader = async () => {
@@ -71,7 +85,6 @@ const ProfileScreen: React.FC = () => {
   };
 
   const [image, setImage] = useState('');
-  const [cropData, setCropData] = useState('');
   const cropperRef = useRef<ReactCropperElement>(null);
   const onChange = (e: any) => {
     e.preventDefault();
@@ -86,11 +99,38 @@ const ProfileScreen: React.FC = () => {
     reader.readAsDataURL(files[0]);
   };
 
-  const getCropData = (e: any) => {
+  const uploadCroppedImage = async () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
-      e.preventDefault();
-      setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
-      setImage('');
+      const croppedCanvas = cropperRef.current?.cropper.getCroppedCanvas();
+  
+      if (croppedCanvas) {
+        croppedCanvas.toBlob(async (blob) => {
+          if (blob) {
+            const formData = new FormData();
+            formData.append("file", blob);
+            formData.append("userId", "59995a1b-a2c6-11ef-aafe-8c1645e72e09");
+        
+            try {
+              const response = await fetch(`http://localhost:3001/users/upload-avatar`, {
+                method: "POST",
+                body: formData,
+              });
+        
+              const data = await response.json();
+              console.log("Uploaded image URL:", data.avatarUrl);
+              if(user) {
+                setUser({
+                  ...user,
+                  avatarUrl: data.avatarUrl
+                });
+              }
+              setImage('');
+            } catch (error) {
+              console.error("Error uploading image:", error);
+            }
+          }
+        }, "image/jpeg");
+      }
     }
   };
 
@@ -112,48 +152,59 @@ const ProfileScreen: React.FC = () => {
           alignItems: 'center',
         }}
       >
-        <Typography variant="h4" fontWeight="bold" marginTop={5}>
-          Mariqnko
-        </Typography>
-        {image ?
-          <Cropper
-            style={{ maxHeight: 600, maxWidth: 400 }}
-            src={image}
-            ref={cropperRef}
-            minCropBoxHeight={200}
-            minCropBoxWidth={200}
-            responsive={true}
-          />
-          :
-          cropData ?
-            <img style={{ width: "220px", height: "220px" }} src={cropData} alt="cropped" />
-            :
-            <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
-        }
-        {image ?
-          <Button
-            color="primary"
-            sx={{ textTransform: 'none', fontSize: 18 }}
-            component="label"
-            onClick={getCropData}
-          >
-            Crop Image
-          </Button>
-        :
-          <Button
-            color="primary"
-            sx={{ textTransform: 'none', fontSize: 18 }}
-            component="label"
-          >
-            Change Image
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={onChange}
+        <Box style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20 }}>
+          <Typography variant="h4" fontWeight="bold">
+            {user?.username}
+          </Typography>
+          {image ?
+            <Cropper
+              style={{ maxHeight: 600, maxWidth: 400 }}
+              src={image}
+              ref={cropperRef}
+              minCropBoxHeight={200}
+              minCropBoxWidth={200}
+              // responsive={true}
+              zoomable={false}
             />
-          </Button>
-        }
+            :
+            user?.avatarUrl ?
+              <img style={{ width: "220px", height: "220px", marginTop: 10 }} src={user.avatarUrl} alt="cropped" />
+              :
+              <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
+          }
+          {image ?
+            <Box display="flex" gap={2}>
+            <Button
+              color="primary"
+              sx={{ textTransform: 'none', fontSize: 18 }}
+              onClick={uploadCroppedImage}
+            >
+              Save Image
+            </Button>
+            <Button
+              color="primary"
+              sx={{ textTransform: 'none', fontSize: 18 }}
+              onClick={() => setImage('')}
+            >
+              Cancel
+            </Button>
+          </Box>
+          :
+            <Button
+              color="primary"
+              sx={{ textTransform: 'none', fontSize: 18 }}
+              component="label"
+            >
+              Change Image
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={onChange}
+              />
+            </Button>
+          }
+        </Box>
         <Box sx={{ width: '100%' }}>
           <Tabs
             value={activeTab}
