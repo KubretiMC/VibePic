@@ -27,13 +27,16 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
   const { groupName = '' } = useParams<{ groupName: string }>();
   
   useEffect(() => {
-    axios.get('http://localhost:3001/groups/names')
+    const getGroupNames = async () => {
+      await axios.get('http://localhost:3001/groups/names')
       .then(response => {
         setGroups(response.data);
       })
       .catch(error => {
         console.error('Error fetching groups:', error);
       });
+    };
+    getGroupNames();
   }, []);
 
   const handleGroupClick = (group: string) => {

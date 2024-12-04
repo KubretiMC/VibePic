@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2 } from '@mui/material';
+import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import DrawerComponent from '../../components/DrawerComponent';
-import { useImageLoader } from '../../hooks/useImageLoader';
+import DrawerComponent from '../../../components/DrawerComponent';
+import { useImageLoader } from '../../../hooks/useImageLoader';
 import axios from 'axios';
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { User } from '../../models/User';
+import { User } from '../../../models/User';
+import ActionButtons from '../components/ActionButtons';
 
 interface Image {
   id: string;
@@ -23,7 +24,10 @@ const ProfileScreen: React.FC = () => {
   const [images, setImages] = useState<Image[]>([]);
   const [user, setUser] = useState<User>();
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
-  const [openModal, setOpenModal] = useState(false);
+  const [groupNames, setGroupNames] = useState<string[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [openGroupDialog, setOpenGroupDialog] = useState(false);
+  const [confirmAddDialogOpen, setConfirmAddDialogOpen] = useState(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -43,7 +47,18 @@ const ProfileScreen: React.FC = () => {
         console.error('Error fetching personal images:', error);
       }
     };
+
+    const getGroupNames = async () => {
+      await axios.get('http://localhost:3001/groups/names')
+      .then(response => {
+        setGroupNames(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      });
+    };
     getUserInfo();
+    getGroupNames();
   }, []);
 
   useEffect(() => {
@@ -75,12 +90,34 @@ const ProfileScreen: React.FC = () => {
     }
   }, [activeTab]);
 
-  const handleImageClick = (image: Image) => {
+  const handleAddToGroup = (image: Image) => {
     setSelectedImage(image);
+    setOpenGroupDialog(true);
   };
 
-  const handleCloseModal = () => {
-    setSelectedImage(null);
+  const handleCancelGroupDialog = () => {
+    setOpenGroupDialog(false);
+    setSelectedGroup(null);
+  };
+
+  const handleConfirmAddGroup = async () => {
+    if (!selectedGroup || !selectedImage) return;
+    try {
+      await axios.post('http://localhost:3001/images/add-to-group', {
+        imageId: selectedImage.id,
+        groupId: selectedGroup,
+      });
+      
+      setImages(prevImages =>
+        prevImages.map(img =>
+          img.id === selectedImage.id ? { ...img, groupId: selectedGroup } : img
+        )
+      );
+    } catch (error) {
+      console.error('Error adding image to group:', error);
+    }
+    setOpenGroupDialog(false);
+    setConfirmAddDialogOpen(false);
   };
 
   const [avatarImage, setAvatarImage] = useState('');
@@ -166,10 +203,6 @@ const ProfileScreen: React.FC = () => {
       }
     }
   };
-
-  const handleAddToGroup = (image: Image) => {
-    console.log(`Add image ${image.id} to a group`);
-  };
   
   const handleDeleteImage = async (image: Image) => {
     try {
@@ -213,7 +246,6 @@ const ProfileScreen: React.FC = () => {
               ref={cropperRef}
               minCropBoxHeight={200}
               minCropBoxWidth={200}
-              // responsive={true}
               zoomable={false}
             />
             :
@@ -223,23 +255,13 @@ const ProfileScreen: React.FC = () => {
               <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
           }
           {avatarImage ?
-            <Box display="flex" gap={2}>
-            <Button
-              color="primary"
-              sx={{ textTransform: 'none', fontSize: 18 }}
-              onClick={uploadCroppedImage}
-            >
-              Save Image
-            </Button>
-            <Button
-              color="primary"
-              sx={{ textTransform: 'none', fontSize: 18 }}
-              onClick={() => setAvatarImage('')}
-            >
-              Cancel
-            </Button>
-          </Box>
-          :
+            <ActionButtons 
+              addButtonName={'Save Image'} 
+              cancelButtonName={'Cancel'} 
+              onAddButtonClick={uploadCroppedImage} 
+              onCancelButtonClick={() => setAvatarImage('')} 
+            />
+            :
             <Button
               color="primary"
               sx={{ textTransform: 'none', fontSize: 18 }}
@@ -296,10 +318,7 @@ const ProfileScreen: React.FC = () => {
                     }}
                   >
                     <Typography variant="h4" sx={{ color: '#000', fontWeight: 'bold', fontSize: '2rem' }}>
-                      +
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: '#000', fontWeight: 'bold' }}>
-                      Add Photo
+                      + Add Photo
                     </Typography>
                   </Box>
                   <input
@@ -325,14 +344,14 @@ const ProfileScreen: React.FC = () => {
                     borderRadius: 2,
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleImageClick(image)}
+                  onClick={() => setSelectedImage(image)}
                 />
               </Grid2>
             ))}
           </Grid2>
         </Box>
 
-        <Dialog open={!!selectedImage} onClose={handleCloseModal} maxWidth="lg">
+        <Dialog open={!!selectedImage} onClose={() => setSelectedImage(null)} maxWidth="lg">
           {selectedImage && (
             <DialogContent>
               <Box
@@ -355,51 +374,50 @@ const ProfileScreen: React.FC = () => {
                 Likes: {selectedImage.likes}
               </Typography>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  width: '100%',
-                  mt: 2,
-                  gap: 2,
-                }}
-              >
-                {selectedImage.groupId === undefined && (
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    sx={{
-                      flexGrow: 1,
-                      border: 2,
-                      backgroundColor: '#00A2E8',
-                      textTransform: 'none',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                      width: '50%'
-                    }}
-                    onClick={() => handleAddToGroup(selectedImage)}
-                  >
-                    Add to Group
-                  </Button>
-                )}
-                <Button
-                  variant="outlined"
-                  sx={{
-                    flexGrow: 1,
-                    backgroundColor: 'red',
-                    textTransform: 'none',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                    width: '50%'
-                  }}
-                  onClick={() => handleDeleteImage(selectedImage)}
-                >
-                  Delete
-                </Button>
-              </Box>
+              <ActionButtons 
+                addButtonName={'Add to group'}
+                cancelButtonName={'Delete'}
+                onAddButtonClick={() => handleAddToGroup(selectedImage)}
+                onCancelButtonClick={() =>  handleDeleteImage(selectedImage)}
+                hideAddButton={!!selectedImage.groupId}              
+              />
             </DialogContent>
           )}
+        </Dialog>
+
+        <Dialog open={openGroupDialog} onClose={handleCancelGroupDialog}>
+          <DialogContent>
+            <Typography variant="h6">Select a Group</Typography>
+            <FormControl fullWidth>
+              <InputLabel>Group</InputLabel>
+              <Select value={selectedGroup || ''} onChange={(e) => setSelectedGroup(e.target.value)}>
+                {groupNames.map((group, index) => (
+                  <MenuItem key={index} value={group}>
+                    {group}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <ActionButtons 
+              addButtonName={'Add'}
+              cancelButtonName={'Cancel'}
+              onAddButtonClick={() => setConfirmAddDialogOpen(true)}
+              onCancelButtonClick={handleCancelGroupDialog}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={confirmAddDialogOpen} onClose={() => setConfirmAddDialogOpen(false)}>
+          <DialogContent>
+            <Typography variant="h6">Are you sure?</Typography>
+            <Typography variant="body2">This action cannot be undone.</Typography>
+            <ActionButtons 
+              addButtonName={'Yes'}
+              cancelButtonName={'No'}
+              onAddButtonClick={handleConfirmAddGroup} 
+              onCancelButtonClick={() => setConfirmAddDialogOpen(false)} 
+            />
+          </DialogContent>
         </Dialog>
       </Box>
     </Box>
