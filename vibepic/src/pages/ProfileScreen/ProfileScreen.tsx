@@ -15,6 +15,7 @@ interface Image {
   imagePath: string;
   createdAt: string;
   uploaderName: string;
+  groupId?: string;
 }
 
 const ProfileScreen: React.FC = () => {
@@ -76,11 +77,9 @@ const ProfileScreen: React.FC = () => {
 
   const handleImageClick = (image: Image) => {
     setSelectedImage(image);
-    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
     setSelectedImage(null);
   };
 
@@ -122,15 +121,15 @@ const ProfileScreen: React.FC = () => {
       const data = await response.json();
   
       if (user) {
-        setUser({
-          ...user,
-          avatarUrl: data.avatarUrl,
-        });
+        setImages([
+          data.image,
+          ...images
+        ]);
       }
-  
-      setAvatarImage('');
     } catch (error) {
       console.error("Error uploading image:", error);
+    } finally {
+      e.target.value = "";
     }
   };
 
@@ -165,6 +164,23 @@ const ProfileScreen: React.FC = () => {
           }
         }, "image/jpeg");
       }
+    }
+  };
+
+  const handleAddToGroup = (image: Image) => {
+    console.log(`Add image ${image.id} to a group`);
+  };
+  
+  const handleDeleteImage = async (image: Image) => {
+    try {
+      const response = await fetch(`http://localhost:3001/images/${image.id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Failed to delete image');
+      }
+      setImages(prevImages => prevImages.filter(img => img.id !== image.id));
+      setSelectedImage(null);
+    } catch (error) {
+      console.error('Error deleting image:', error);
     }
   };
 
@@ -252,7 +268,7 @@ const ProfileScreen: React.FC = () => {
           </Tabs>
         </Box>
 
-        <Box sx={{ marginTop: 4, width: '80%' }}>
+        <Box sx={{ marginTop: 4, marginBottom: 2, width: '80%' }}>
           <Grid2 container spacing={2} justifyContent="center">
             {activeTab === 0 &&
               <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
@@ -316,7 +332,7 @@ const ProfileScreen: React.FC = () => {
           </Grid2>
         </Box>
 
-        <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg">
+        <Dialog open={!!selectedImage} onClose={handleCloseModal} maxWidth="lg">
           {selectedImage && (
             <DialogContent>
               <Box
@@ -338,6 +354,50 @@ const ProfileScreen: React.FC = () => {
               <Typography variant="body2" color="textSecondary">
                 Likes: {selectedImage.likes}
               </Typography>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  width: '100%',
+                  mt: 2,
+                  gap: 2,
+                }}
+              >
+                {selectedImage.groupId === undefined && (
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    sx={{
+                      flexGrow: 1,
+                      border: 2,
+                      backgroundColor: '#00A2E8',
+                      textTransform: 'none',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: 16,
+                      width: '50%'
+                    }}
+                    onClick={() => handleAddToGroup(selectedImage)}
+                  >
+                    Add to Group
+                  </Button>
+                )}
+                <Button
+                  variant="outlined"
+                  sx={{
+                    flexGrow: 1,
+                    backgroundColor: 'red',
+                    textTransform: 'none',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                    width: '50%'
+                  }}
+                  onClick={() => handleDeleteImage(selectedImage)}
+                >
+                  Delete
+                </Button>
+              </Box>
             </DialogContent>
           )}
         </Dialog>
