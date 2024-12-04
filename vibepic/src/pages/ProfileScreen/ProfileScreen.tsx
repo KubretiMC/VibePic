@@ -84,9 +84,10 @@ const ProfileScreen: React.FC = () => {
     setSelectedImage(null);
   };
 
-  const [image, setImage] = useState('');
+  const [avatarImage, setAvatarImage] = useState('');
   const cropperRef = useRef<ReactCropperElement>(null);
-  const onChange = (e: any) => {
+
+  const onAvatarChange = (e: any) => {
     e.preventDefault();
     let files;
     if (e.target) {
@@ -94,9 +95,43 @@ const ProfileScreen: React.FC = () => {
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result as any);
+      setAvatarImage(reader.result as any);
     };
     reader.readAsDataURL(files[0]);
+  };
+
+  const onImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+  
+    const files = e.target?.files;
+    if (!files || files.length === 0) {
+      console.error("No files selected.");
+      return;
+    }
+  
+    const file = files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("userId", "59995a1b-a2c6-11ef-aafe-8c1645e72e09");
+  
+    try {
+      const response = await fetch(`http://localhost:3001/images/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+  
+      if (user) {
+        setUser({
+          ...user,
+          avatarUrl: data.avatarUrl,
+        });
+      }
+  
+      setAvatarImage('');
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
 
   const uploadCroppedImage = async () => {
@@ -115,16 +150,15 @@ const ProfileScreen: React.FC = () => {
                 method: "POST",
                 body: formData,
               });
-        
               const data = await response.json();
-              console.log("Uploaded image URL:", data.avatarUrl);
+
               if(user) {
                 setUser({
                   ...user,
                   avatarUrl: data.avatarUrl
                 });
               }
-              setImage('');
+              setAvatarImage('');
             } catch (error) {
               console.error("Error uploading image:", error);
             }
@@ -156,10 +190,10 @@ const ProfileScreen: React.FC = () => {
           <Typography variant="h4" fontWeight="bold">
             {user?.username}
           </Typography>
-          {image ?
+          {avatarImage ?
             <Cropper
               style={{ maxHeight: 600, maxWidth: 400 }}
-              src={image}
+              src={avatarImage}
               ref={cropperRef}
               minCropBoxHeight={200}
               minCropBoxWidth={200}
@@ -172,7 +206,7 @@ const ProfileScreen: React.FC = () => {
               :
               <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
           }
-          {image ?
+          {avatarImage ?
             <Box display="flex" gap={2}>
             <Button
               color="primary"
@@ -184,7 +218,7 @@ const ProfileScreen: React.FC = () => {
             <Button
               color="primary"
               sx={{ textTransform: 'none', fontSize: 18 }}
-              onClick={() => setImage('')}
+              onClick={() => setAvatarImage('')}
             >
               Cancel
             </Button>
@@ -200,7 +234,7 @@ const ProfileScreen: React.FC = () => {
                 type="file"
                 accept="image/*"
                 hidden
-                onChange={onChange}
+                onChange={onAvatarChange}
               />
             </Button>
           }
@@ -220,6 +254,48 @@ const ProfileScreen: React.FC = () => {
 
         <Box sx={{ marginTop: 4, width: '80%' }}>
           <Grid2 container spacing={2} justifyContent="center">
+            {activeTab === 0 &&
+              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+                <label
+                  htmlFor="file-upload"
+                  style={{ position: 'relative', cursor: 'pointer' }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      height: '200px',
+                      border: '2px dashed #ccc',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      backgroundColor: '#fff',
+                      transition: 'all 0.3s',
+                      '&:hover': {
+                        backgroundColor: '#f0f0f0',
+                        borderColor: '#00A2E8',
+                      },
+                    }}
+                  >
+                    <Typography variant="h4" sx={{ color: '#000', fontWeight: 'bold', fontSize: '2rem' }}>
+                      +
+                    </Typography>
+                    <Typography variant="h6" sx={{ color: '#000', fontWeight: 'bold' }}>
+                      Add Photo
+                    </Typography>
+                  </Box>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={onImageUpload}
+                  />
+                </label>
+              </Grid2>
+            }
             {images.map((image) => (
               <Grid2 key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <Box
