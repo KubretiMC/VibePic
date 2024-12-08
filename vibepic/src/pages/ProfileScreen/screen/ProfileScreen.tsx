@@ -5,10 +5,9 @@ import {
   Typography, 
   Tabs, 
   Tab, 
-  Dialog, 
-  DialogContent, 
   Grid2, 
-  Drawer 
+  Drawer, 
+  CircularProgress
 } from '@mui/material';
 import axios from 'axios';
 import { User } from '../../../models/User';
@@ -17,6 +16,7 @@ import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
 import AvatarUploader from '../components/AvatarUploader';
 import AddPhotoDialog from '../components/AddPhotoDialog';
+import SelectedImageDialog from '../components/SelectedImageDialog';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const ProfileScreen: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [groupInfo, setGroupInfo] = useState<Group[]>([]);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     tempImage: null as File | null,
@@ -110,6 +111,7 @@ const ProfileScreen: React.FC = () => {
   
   const handleDeleteImage = async (image: Image) => {
     try {
+      setIsLoading(true)
       const response = await fetch(`http://localhost:3001/images/${image.id}`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error('Failed to delete image');
@@ -118,6 +120,8 @@ const ProfileScreen: React.FC = () => {
       setSelectedImage(null);
     } catch (error) {
       console.error('Error deleting image:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -145,6 +149,24 @@ const ProfileScreen: React.FC = () => {
             </Typography>
           </Button>
       </Drawer>
+      {isLoading && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 9999,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
       <Box
         component="main"
         sx={{
@@ -167,6 +189,7 @@ const ProfileScreen: React.FC = () => {
                 setUser({ ...user, avatarUrl: newAvatarUrl });
               }
             }}
+            setIsLoading={setIsLoading}
           />
         </Box>
         <Box sx={{ width: '100%' }}>
@@ -243,56 +266,21 @@ const ProfileScreen: React.FC = () => {
           </Grid2>
         </Box>
 
-        <Dialog open={!!selectedImage} onClose={() => setSelectedImage(null)} maxWidth="lg">
-          {selectedImage && (
-            <DialogContent>
-              <Box
-                component="img"
-                src={selectedImage.imagePath}
-                alt={selectedImage.description}
-                sx={{
-                  width: '100%',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
-                }}
-              />
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                {selectedImage.description}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Uploaded on: {new Date(selectedImage.createdAt).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Likes: {selectedImage.likes}
-              </Typography>
-              <Button
-                variant="outlined"
-                sx={{
-                  flexGrow: 1,
-                  backgroundColor: 'red',
-                  textTransform: 'none',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                  width: '100%',
-                  marginTop: 1
-                }}
-                onClick={() =>  handleDeleteImage(selectedImage)}
-              >
-                Delete
-              </Button>
-            </DialogContent>
-          )}
-        </Dialog>
+        <SelectedImageDialog
+          selectedImage={selectedImage}
+          onClose={() => setSelectedImage(null)}
+          onDelete={handleDeleteImage}
+        />
 
         <AddPhotoDialog
           open={openUploadDialog}
           onClose={() => setOpenUploadDialog(false)}
           groupInfo={groupInfo}
           onImageUploadSuccess={handleImageUploadSuccess}
-          userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09" 
-          formData={formData} 
-          setFormData={setFormData}        
+          userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09"
+          formData={formData}
+          setFormData={setFormData} 
+          setIsLoading={setIsLoading}     
         />
       </Box>
     </Box>

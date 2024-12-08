@@ -9,9 +9,10 @@ interface AvatarUploaderProps {
   userAvatarUrl?: string;
   userId: string;
   onAvatarUpdate: (newAvatarUrl: string) => void;
+  setIsLoading: (loading: boolean) => void;
 }
 
-const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, onAvatarUpdate }) => {
+const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, onAvatarUpdate, setIsLoading }) => {
   const cropperRef = useRef<ReactCropperElement>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, 
           const formData = new FormData();
           formData.append('file', blob);
           formData.append('userId', userId);
-
+          setIsLoading(true);
           try {
             const response = await fetch(`http://localhost:3001/users/upload-avatar`, {
               method: 'POST',
@@ -43,6 +44,8 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, 
             setAvatarImage(null);
           } catch (error) {
             console.error('Error uploading avatar:', error);
+          } finally {
+            setIsLoading(false);
           }
         }
       }, 'image/jpeg');

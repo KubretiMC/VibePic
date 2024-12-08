@@ -19,6 +19,7 @@ interface AddPhotoDialogProps {
   groupInfo: Group[];
   onImageUploadSuccess: (image: any) => void;
   userId: string;
+  setIsLoading: (loading: boolean) => void;
   formData: any;
   setFormData: any;
 }
@@ -29,6 +30,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   groupInfo,
   onImageUploadSuccess,
   userId,
+  setIsLoading,
   formData,
   setFormData
 }) => {
@@ -61,6 +63,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
     formDataToSend.append('description', formData.imageDescription);
     formDataToSend.append('groupId', formData.selectedGroup);
 
+    setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3001/images/upload`, {
         method: 'POST',
@@ -74,6 +77,9 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
       }
     } catch (error) {
       console.error('Error uploading image:', error);
+    } finally {
+      setIsLoading(false);
+      formData.tempImage = null;
     }
   };
 
