@@ -1,14 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2, FormControl, InputLabel, Select, MenuItem, TextField, Drawer } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import React, { useEffect, useState } from 'react';
+import { 
+  Box, 
+  Button, 
+  Typography, 
+  Tabs, 
+  Tab, 
+  Dialog, 
+  DialogContent, 
+  Grid2, 
+  Drawer 
+} from '@mui/material';
 import axios from 'axios';
-import Cropper, { ReactCropperElement } from "react-cropper";
-import "cropperjs/dist/cropper.css";
 import { User } from '../../../models/User';
-import ActionButtons from '../components/ActionButtons';
 import { useNavigate } from 'react-router-dom';
 import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
+import AvatarUploader from '../components/AvatarUploader';
+import AddPhotoDialog from '../components/AddPhotoDialog';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -17,11 +25,31 @@ const ProfileScreen: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [groupInfo, setGroupInfo] = useState<Group[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
-  const [tempImage, setTempImage] = useState<File | null>(null);  // Holds the temporary image
-  const [tempImageUrl, setTempImageUrl] = useState<string>('');
   const [openUploadDialog, setOpenUploadDialog] = useState(false);  
-  const [imageDescription, setImageDescription] = useState<string>('');  
+
+  const [formData, setFormData] = useState({
+    tempImage: null as File | null,
+    tempImageUrl: '',
+    imageDescription: '',
+    selectedGroup: '',
+  });
+
+  const handleAddImageClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target?.files?.[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        tempImage: file,
+        tempImageUrl: URL.createObjectURL(file),
+      }));
+      setOpenUploadDialog(true);
+      e.target.value = '';
+    }
+  };
+
+  const handleImageUploadSuccess = (newImage: Image) => {
+    setImages((prevImages) => [newImage, ...prevImages]);
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -79,83 +107,6 @@ const ProfileScreen: React.FC = () => {
     }
   }, [activeTab]);
 
-  const [avatarImage, setAvatarImage] = useState('');
-  const cropperRef = useRef<ReactCropperElement>(null);
-
-  const onAvatarChange = (e: any) => {
-    e.preventDefault();
-    let files;
-    if (e.target) {
-      files = e.target.files;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setAvatarImage(reader.result as any);
-    };
-    reader.readAsDataURL(files[0]);
-  };
-
-  const onImageUpload = async (tempImage: any) => {  
-    const formData = new FormData();
-    formData.append("file", tempImage);
-    formData.append("userId", "59995a1b-a2c6-11ef-aafe-8c1645e72e09");
-    formData.append("description", imageDescription);
-    formData.append("groupId", selectedGroup);
-    
-    try {
-      const response = await fetch(`http://localhost:3001/images/upload`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-  
-      if (data.image) {
-        setImages([
-          data.image,
-          ...images
-        ]);
-        resetFields();
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-    } finally {
-      setTempImage(null);
-    }
-  };
-
-  const uploadCroppedImage = async () => {
-    if (typeof cropperRef.current?.cropper !== "undefined") {
-      const croppedCanvas = cropperRef.current?.cropper.getCroppedCanvas();
-  
-      if (croppedCanvas) {
-        croppedCanvas.toBlob(async (blob) => {
-          if (blob) {
-            const formData = new FormData();
-            formData.append("file", blob);
-            formData.append("userId", "59995a1b-a2c6-11ef-aafe-8c1645e72e09");
-        
-            try {
-              const response = await fetch(`http://localhost:3001/users/upload-avatar`, {
-                method: "POST",
-                body: formData,
-              });
-              const data = await response.json();
-
-              if(user) {
-                setUser({
-                  ...user,
-                  avatarUrl: data.avatarUrl
-                });
-              }
-              setAvatarImage('');
-            } catch (error) {
-              console.error("Error uploading image:", error);
-            }
-          }
-        }, "image/jpeg");
-      }
-    }
-  };
   
   const handleDeleteImage = async (image: Image) => {
     try {
@@ -169,24 +120,6 @@ const ProfileScreen: React.FC = () => {
       console.error('Error deleting image:', error);
     }
   };
-
-  const onAddImageClick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target?.files?.[0];
-    if (file) {
-      setTempImage(file);
-      setTempImageUrl(URL.createObjectURL(file));
-      setOpenUploadDialog(true); 
-    }
-  };
-
-  const resetFields = () => {
-    setTempImage(null);
-    setTempImageUrl('');
-    setOpenUploadDialog(false);
-    setSelectedGroup('');
-    setSelectedImage(null);
-    setImageDescription(''); 
-  }
 
   return (
     <Box display="flex">
@@ -226,43 +159,15 @@ const ProfileScreen: React.FC = () => {
           <Typography variant="h4" fontWeight="bold">
             {user?.username}
           </Typography>
-          {avatarImage ?
-            <Cropper
-              style={{ maxHeight: 600, maxWidth: 400 }}
-              src={avatarImage}
-              ref={cropperRef}
-              minCropBoxHeight={200}
-              minCropBoxWidth={200}
-              zoomable={false}
-            />
-            :
-            user?.avatarUrl ?
-              <img style={{ width: "220px", height: "220px", marginTop: 10 }} src={user.avatarUrl} alt="cropped" />
-              :
-              <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
-          }
-          {avatarImage ?
-            <ActionButtons 
-              addButtonName={'Save Image'} 
-              cancelButtonName={'Cancel'} 
-              onAddButtonClick={uploadCroppedImage} 
-              onCancelButtonClick={() => setAvatarImage('')} 
-            />
-            :
-            <Button
-              color="primary"
-              sx={{ textTransform: 'none', fontSize: 18 }}
-              component="label"
-            >
-              Change Image
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={onAvatarChange}
-              />
-            </Button>
-          }
+          <AvatarUploader
+            userAvatarUrl={user?.avatarUrl}
+            userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09"
+            onAvatarUpdate={(newAvatarUrl) => {
+              if (user) {
+                setUser({ ...user, avatarUrl: newAvatarUrl });
+              }
+            }}
+          />
         </Box>
         <Box sx={{ width: '100%' }}>
           <Tabs
@@ -313,7 +218,7 @@ const ProfileScreen: React.FC = () => {
                     type="file"
                     accept="image/*"
                     hidden
-                    onChange={onAddImageClick}
+                    onChange={handleAddImageClick}
                   />
                 </label>
               </Grid2>
@@ -380,56 +285,15 @@ const ProfileScreen: React.FC = () => {
           )}
         </Dialog>
 
-        <Dialog open={openUploadDialog} onClose={resetFields}>
-          <DialogContent>
-            <Typography variant="h6">Upload Image</Typography>
-            
-            {tempImageUrl && (
-              <Box
-                component="img"
-                src={tempImageUrl}
-                alt="Uploaded Preview"
-                sx={{
-                  width: '100%',
-                  maxHeight: '400px',
-                  objectFit: 'contain',
-                  marginBottom: 2,
-                }}
-              />
-            )}
-
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={4}
-              value={imageDescription}
-              onChange={(e) => setImageDescription(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-
-            <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <InputLabel>Group</InputLabel>
-              <Select
-                value={selectedGroup}
-                onChange={(e) => setSelectedGroup(e.target.value)}
-              >
-                {groupInfo.map((group, index) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <ActionButtons
-              addButtonName="Upload"
-              cancelButtonName="Cancel"
-              onAddButtonClick={() => onImageUpload(tempImage)}
-              onCancelButtonClick={resetFields}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddPhotoDialog
+          open={openUploadDialog}
+          onClose={() => setOpenUploadDialog(false)}
+          groupInfo={groupInfo}
+          onImageUploadSuccess={handleImageUploadSuccess}
+          userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09" 
+          formData={formData} 
+          setFormData={setFormData}        
+        />
       </Box>
     </Box>
   );

@@ -6,18 +6,17 @@ interface ActionButtonsProps {
   cancelButtonName: string;
   onAddButtonClick: () => void;
   onCancelButtonClick: () => void;
-  hideAddButton?: boolean;
+  disabled?: boolean;
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ addButtonName, cancelButtonName, onAddButtonClick, onCancelButtonClick, hideAddButton }) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({ addButtonName, cancelButtonName, onAddButtonClick, onCancelButtonClick, disabled }) => {
   return (
     <Box display="flex" justifyContent="space-between" mt={2} gap={2}>
-    {hideAddButton ?
-      <></>
-      :
+    {
       <Button
         variant="outlined"
         color="primary"
+        disabled={disabled}
         sx={{
           flexGrow: 1,
           backgroundColor: '#00A2E8',
