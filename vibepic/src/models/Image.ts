@@ -3,8 +3,8 @@ export interface Image {
     createdAt: Date;
     description: string;
     imagePath: string;
-    imageType: string;
+    groupName?: string;
+    groupId?: string;
     likes: number;
     uploaderName: string;
-  }
-  
+}

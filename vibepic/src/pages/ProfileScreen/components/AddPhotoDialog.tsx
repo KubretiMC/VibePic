@@ -1,0 +1,141 @@
+import React from 'react';
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  Typography,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { Group } from '../../../models/Group';
+import ActionButtons from '../components/ActionButtons';
+
+interface AddPhotoDialogProps {
+  open: boolean;
+  onClose: () => void;
+  groupInfo: Group[];
+  onImageUploadSuccess: (image: any) => void;
+  userId: string;
+  setIsLoading: (loading: boolean) => void;
+  formData: any;
+  setFormData: any;
+}
+
+const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
+  open,
+  onClose,
+  groupInfo,
+  onImageUploadSuccess,
+  userId,
+  setIsLoading,
+  formData,
+  setFormData
+}) => {
+  const handleInputChange = (field: keyof typeof formData, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const isFormValid = () => {
+    return formData.tempImage && formData.imageDescription && formData.selectedGroup;
+  }
+  const resetFields = () => {
+    setFormData({
+      tempImage: null,
+      tempImageUrl: '',
+      imageDescription: '',
+      selectedGroup: '',
+    });
+    onClose();
+  };
+
+  const handleImageUpload = async () => {
+    if (!isFormValid()) {
+      alert('Please fill all fields before uploading.');
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('file', formData.tempImage!);
+    formDataToSend.append('userId', userId);
+    formDataToSend.append('description', formData.imageDescription);
+    formDataToSend.append('groupId', formData.selectedGroup);
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3001/images/upload`, {
+        method: 'POST',
+        body: formDataToSend,
+      });
+      const data = await response.json();
+
+      if (data.image) {
+        onImageUploadSuccess(data.image);
+        resetFields();
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    } finally {
+      setIsLoading(false);
+      formData.tempImage = null;
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={resetFields}>
+      <DialogContent>
+        <Typography variant="h6">Upload Image</Typography>
+
+        {formData.tempImageUrl && (
+          <Box
+            component="img"
+            src={formData.tempImageUrl}
+            alt="Uploaded Preview"
+            sx={{
+              width: '100%',
+              maxHeight: '400px',
+              objectFit: 'contain',
+              marginBottom: 2,
+            }}
+          />
+        )}
+
+        <TextField
+          label="Description"
+          fullWidth
+          multiline
+          rows={4}
+          value={formData.imageDescription}
+          onChange={(e) => handleInputChange('imageDescription', e.target.value)}
+          sx={{ marginBottom: 2 }}
+        />
+
+        <FormControl fullWidth sx={{ marginBottom: 2 }}>
+          <InputLabel>Group</InputLabel>
+          <Select
+            value={formData.selectedGroup}
+            onChange={(e) => handleInputChange('selectedGroup', e.target.value)}
+          >
+            {groupInfo.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <ActionButtons
+          addButtonName="Upload"
+          cancelButtonName="Cancel"
+          onAddButtonClick={handleImageUpload}
+          onCancelButtonClick={resetFields}
+          disabled={!isFormValid()}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AddPhotoDialog;

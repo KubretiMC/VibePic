@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import StartScreen from './pages/StartScreen/screen/StartScreen';
 import HomeScreen from './pages/HomeScreen/screen/HomeScreen';
 import GroupScreen from './pages/GroupScreen/screen/GroupScreen';
-import ProfileScreen from './pages/ProfileScreen/ProfileScreen';
+import ProfileScreen from './pages/ProfileScreen/screen/ProfileScreen';
 
 const AppRoutes = () => (
   <Router>
