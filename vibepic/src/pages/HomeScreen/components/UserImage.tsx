@@ -66,7 +66,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => 
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
                   <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>
                   <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
-                  <Typography fontStyle={{ color: 'white' }} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.imageType}</Typography>
+                  <Typography fontStyle={{ color: 'white' }} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
                 </Box>
                 <Typography variant="body2">{image.description}</Typography>
                 <Typography fontSize={12} variant="body2">{new Date(image.createdAt).toDateString()}</Typography>

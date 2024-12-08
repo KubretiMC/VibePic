@@ -1,42 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Button, Typography, Tabs, Tab, Dialog, DialogContent, Grid2, FormControl, InputLabel, Select, MenuItem, TextField, Drawer } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import DrawerComponent from '../../../components/DrawerComponent';
-import { useImageLoader } from '../../../hooks/useImageLoader';
 import axios from 'axios';
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { User } from '../../../models/User';
 import ActionButtons from '../components/ActionButtons';
-
-interface Image {
-  id: string;
-  description: string;
-  likes: number;
-  imagePath: string;
-  createdAt: string;
-  uploaderName: string;
-  groupId?: string;
-}
+import { useNavigate } from 'react-router-dom';
+import { Image } from '../../../models/Image';
+import { Group } from '../../../models/Group';
 
 const ProfileScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<Image[]>([]);
   const [user, setUser] = useState<User>();
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
-  const [groupNames, setGroupNames] = useState<string[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [openGroupDialog, setOpenGroupDialog] = useState(false);
-  const [confirmAddDialogOpen, setConfirmAddDialogOpen] = useState(false);
+  const [groupInfo, setGroupInfo] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  const [tempImage, setTempImage] = useState<File | null>(null);  // Holds the temporary image
+  const [tempImageUrl, setTempImageUrl] = useState<string>('');
+  const [openUploadDialog, setOpenUploadDialog] = useState(false);  
+  const [imageDescription, setImageDescription] = useState<string>('');  
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
-  const { dateFilter, likedFilter, updateDateFilter, updateLikeFilter } = useImageLoader(
-    `http://localhost:3001/images`,
-    '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
-  );
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -49,9 +38,9 @@ const ProfileScreen: React.FC = () => {
     };
 
     const getGroupNames = async () => {
-      await axios.get('http://localhost:3001/groups/names')
+      await axios.get('http://localhost:3001/groups/main-info')
       .then(response => {
-        setGroupNames(response.data);
+        setGroupInfo(response.data);
       })
       .catch(error => {
         console.error('Error fetching groups:', error);
@@ -90,36 +79,6 @@ const ProfileScreen: React.FC = () => {
     }
   }, [activeTab]);
 
-  const handleAddToGroup = (image: Image) => {
-    setSelectedImage(image);
-    setOpenGroupDialog(true);
-  };
-
-  const handleCancelGroupDialog = () => {
-    setOpenGroupDialog(false);
-    setSelectedGroup(null);
-  };
-
-  const handleConfirmAddGroup = async () => {
-    if (!selectedGroup || !selectedImage) return;
-    try {
-      await axios.post('http://localhost:3001/images/add-to-group', {
-        imageId: selectedImage.id,
-        groupId: selectedGroup,
-      });
-      
-      setImages(prevImages =>
-        prevImages.map(img =>
-          img.id === selectedImage.id ? { ...img, groupId: selectedGroup } : img
-        )
-      );
-    } catch (error) {
-      console.error('Error adding image to group:', error);
-    }
-    setOpenGroupDialog(false);
-    setConfirmAddDialogOpen(false);
-  };
-
   const [avatarImage, setAvatarImage] = useState('');
   const cropperRef = useRef<ReactCropperElement>(null);
 
@@ -136,20 +95,13 @@ const ProfileScreen: React.FC = () => {
     reader.readAsDataURL(files[0]);
   };
 
-  const onImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-  
-    const files = e.target?.files;
-    if (!files || files.length === 0) {
-      console.error("No files selected.");
-      return;
-    }
-  
-    const file = files[0];
+  const onImageUpload = async (tempImage: any) => {  
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", tempImage);
     formData.append("userId", "59995a1b-a2c6-11ef-aafe-8c1645e72e09");
-  
+    formData.append("description", imageDescription);
+    formData.append("groupId", selectedGroup);
+    
     try {
       const response = await fetch(`http://localhost:3001/images/upload`, {
         method: "POST",
@@ -157,16 +109,17 @@ const ProfileScreen: React.FC = () => {
       });
       const data = await response.json();
   
-      if (user) {
+      if (data.image) {
         setImages([
           data.image,
           ...images
         ]);
+        resetFields();
       }
     } catch (error) {
       console.error("Error uploading image:", error);
     } finally {
-      e.target.value = "";
+      setTempImage(null);
     }
   };
 
@@ -217,14 +170,48 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const onAddImageClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target?.files?.[0];
+    if (file) {
+      setTempImage(file);
+      setTempImageUrl(URL.createObjectURL(file));
+      setOpenUploadDialog(true); 
+    }
+  };
+
+  const resetFields = () => {
+    setTempImage(null);
+    setTempImageUrl('');
+    setOpenUploadDialog(false);
+    setSelectedGroup('');
+    setSelectedImage(null);
+    setImageDescription(''); 
+  }
+
   return (
     <Box display="flex">
-      <DrawerComponent
-        dateFilter={dateFilter}
-        likedFilter={likedFilter}
-        updateDateFilter={updateDateFilter}
-        updateLikeFilter={updateLikeFilter}
-      />
+      <Drawer
+          variant="permanent"
+          sx={{
+            width: 240,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+          }}
+        >
+          <Button
+            onClick={() => navigate(`/home`)}
+            sx={{
+                paddingLeft: 4,
+                paddingTop: 3,
+                textTransform: 'none',
+                display: 'block',
+            }}
+          >
+            <Typography style={{fontSize: 24, color: 'white', textAlign:'left'}}>
+                Home
+            </Typography>
+          </Button>
+      </Drawer>
       <Box
         component="main"
         sx={{
@@ -326,7 +313,7 @@ const ProfileScreen: React.FC = () => {
                     type="file"
                     accept="image/*"
                     hidden
-                    onChange={onImageUpload}
+                    onChange={onAddImageClick}
                   />
                 </label>
               </Grid2>
@@ -373,49 +360,73 @@ const ProfileScreen: React.FC = () => {
               <Typography variant="body2" color="textSecondary">
                 Likes: {selectedImage.likes}
               </Typography>
-
-              <ActionButtons 
-                addButtonName={'Add to group'}
-                cancelButtonName={'Delete'}
-                onAddButtonClick={() => handleAddToGroup(selectedImage)}
-                onCancelButtonClick={() =>  handleDeleteImage(selectedImage)}
-                hideAddButton={!!selectedImage.groupId}              
-              />
+              <Button
+                variant="outlined"
+                sx={{
+                  flexGrow: 1,
+                  backgroundColor: 'red',
+                  textTransform: 'none',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  width: '100%',
+                  marginTop: 1
+                }}
+                onClick={() =>  handleDeleteImage(selectedImage)}
+              >
+                Delete
+              </Button>
             </DialogContent>
           )}
         </Dialog>
 
-        <Dialog open={openGroupDialog} onClose={handleCancelGroupDialog}>
+        <Dialog open={openUploadDialog} onClose={resetFields}>
           <DialogContent>
-            <Typography variant="h6">Select a Group</Typography>
-            <FormControl fullWidth>
+            <Typography variant="h6">Upload Image</Typography>
+            
+            {tempImageUrl && (
+              <Box
+                component="img"
+                src={tempImageUrl}
+                alt="Uploaded Preview"
+                sx={{
+                  width: '100%',
+                  maxHeight: '400px',
+                  objectFit: 'contain',
+                  marginBottom: 2,
+                }}
+              />
+            )}
+
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              rows={4}
+              value={imageDescription}
+              onChange={(e) => setImageDescription(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+
+            <FormControl fullWidth sx={{ marginBottom: 2 }}>
               <InputLabel>Group</InputLabel>
-              <Select value={selectedGroup || ''} onChange={(e) => setSelectedGroup(e.target.value)}>
-                {groupNames.map((group, index) => (
-                  <MenuItem key={index} value={group}>
-                    {group}
+              <Select
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+              >
+                {groupInfo.map((group, index) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <ActionButtons 
-              addButtonName={'Add'}
-              cancelButtonName={'Cancel'}
-              onAddButtonClick={() => setConfirmAddDialogOpen(true)}
-              onCancelButtonClick={handleCancelGroupDialog}
-            />
-          </DialogContent>
-        </Dialog>
 
-        <Dialog open={confirmAddDialogOpen} onClose={() => setConfirmAddDialogOpen(false)}>
-          <DialogContent>
-            <Typography variant="h6">Are you sure?</Typography>
-            <Typography variant="body2">This action cannot be undone.</Typography>
-            <ActionButtons 
-              addButtonName={'Yes'}
-              cancelButtonName={'No'}
-              onAddButtonClick={handleConfirmAddGroup} 
-              onCancelButtonClick={() => setConfirmAddDialogOpen(false)} 
+            <ActionButtons
+              addButtonName="Upload"
+              cancelButtonName="Cancel"
+              onAddButtonClick={() => onImageUpload(tempImage)}
+              onCancelButtonClick={resetFields}
             />
           </DialogContent>
         </Dialog>
