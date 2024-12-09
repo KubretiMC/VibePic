@@ -27,7 +27,7 @@ const ProfileScreen: React.FC = () => {
   const [groupInfo, setGroupInfo] = useState<Group[]>([]);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
-
+  const authToken = localStorage.getItem('token') || ''; 
   const [formData, setFormData] = useState({
     tempImage: null as File | null,
     tempImageUrl: '',
@@ -59,7 +59,9 @@ const ProfileScreen: React.FC = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/users/59995a1b-a2c6-11ef-aafe-8c1645e72e09`);
+        const response = await axios.get(`http://localhost:3001/users`, {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching personal images:', error);
@@ -67,7 +69,9 @@ const ProfileScreen: React.FC = () => {
     };
 
     const getGroupNames = async () => {
-      await axios.get('http://localhost:3001/groups/main-info')
+      await axios.get('http://localhost:3001/groups/main-info', {
+         headers: { Authorization: `Bearer ${authToken}` }
+      })
       .then(response => {
         setGroupInfo(response.data);
       })
@@ -83,7 +87,7 @@ const ProfileScreen: React.FC = () => {
     const fetchImagesByUploader = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/images/by-uploader`, {
-          params: { uploaderId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09' },
+          headers: { Authorization: `Bearer ${authToken}` },
         });
         setImages(response.data);
       } catch (error) {
@@ -94,7 +98,7 @@ const ProfileScreen: React.FC = () => {
     const fetchLikedImages = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/images/liked-by-user`, {
-          params: { userId: '59995a1b-a2c6-11ef-aafe-8c1645e72e09' },
+          headers: { Authorization: `Bearer ${authToken}` },
         });
         setImages(response.data);
       } catch (error) {
@@ -112,11 +116,11 @@ const ProfileScreen: React.FC = () => {
   const handleDeleteImage = async (image: Image) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:3001/images/${image.id}`, { method: 'DELETE' });
-      if (!response.ok) {
-        throw new Error('Failed to delete image');
-      }
-      setImages(prevImages => prevImages.filter(img => img.id !== image.id));
+      await axios.delete(`http://localhost:3001/images/${image.id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+    
+      setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
       setSelectedImage(null);
     } catch (error) {
       console.error('Error deleting image:', error);
@@ -183,13 +187,13 @@ const ProfileScreen: React.FC = () => {
           </Typography>
           <AvatarUploader
             userAvatarUrl={user?.avatarUrl}
-            userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09"
             onAvatarUpdate={(newAvatarUrl) => {
               if (user) {
                 setUser({ ...user, avatarUrl: newAvatarUrl });
               }
             }}
             setIsLoading={setIsLoading}
+            authToken={authToken}
           />
         </Box>
         <Box sx={{ width: '100%' }}>
@@ -277,10 +281,10 @@ const ProfileScreen: React.FC = () => {
           onClose={() => setOpenUploadDialog(false)}
           groupInfo={groupInfo}
           onImageUploadSuccess={handleImageUploadSuccess}
-          userId="59995a1b-a2c6-11ef-aafe-8c1645e72e09"
           formData={formData}
           setFormData={setFormData} 
           setIsLoading={setIsLoading}     
+          authToken={authToken}
         />
       </Box>
     </Box>

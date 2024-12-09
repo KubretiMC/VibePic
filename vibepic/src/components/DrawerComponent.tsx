@@ -22,13 +22,16 @@ interface DrawerComponentProps {
 }
 
 const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter }) => {
+  const authToken = localStorage.getItem('token'); 
   const navigate = useNavigate();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
   
   useEffect(() => {
     const getGroupNames = async () => {
-      await axios.get('http://localhost:3001/groups/names')
+      await axios.get('http://localhost:3001/groups/names', {
+        headers: { Authorization: `Bearer ${authToken}` }
+      })
       .then(response => {
         setGroups(response.data);
       })

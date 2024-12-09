@@ -12,16 +12,17 @@ import {
 } from '@mui/material';
 import { Group } from '../../../models/Group';
 import ActionButtons from '../components/ActionButtons';
+import axios from 'axios';
 
 interface AddPhotoDialogProps {
   open: boolean;
   onClose: () => void;
   groupInfo: Group[];
   onImageUploadSuccess: (image: any) => void;
-  userId: string;
   setIsLoading: (loading: boolean) => void;
   formData: any;
   setFormData: any;
+  authToken: string;
 }
 
 const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
@@ -29,10 +30,10 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   onClose,
   groupInfo,
   onImageUploadSuccess,
-  userId,
   setIsLoading,
   formData,
-  setFormData
+  setFormData,
+  authToken
 }) => {
   const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -59,17 +60,17 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
 
     const formDataToSend = new FormData();
     formDataToSend.append('file', formData.tempImage!);
-    formDataToSend.append('userId', userId);
     formDataToSend.append('description', formData.imageDescription);
     formDataToSend.append('groupId', formData.selectedGroup);
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/images/upload`, {
-        method: 'POST',
-        body: formDataToSend,
+      const response = await axios.post('http://localhost:3001/images/upload', formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
-      const data = await response.json();
+      const data = response.data;
 
       if (data.image) {
         onImageUploadSuccess(data.image);

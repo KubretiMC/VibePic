@@ -11,9 +11,9 @@ import UserDropdown from '../../../components/UserDropdown';
 
 const GroupScreen: React.FC = () => {
   const { groupName = '' } = useParams<{ groupName: string }>();
-  const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
   const [joined, setJoined] = useState(false);
   const [groupInfo, setGroupInfo] = useState<Group>();
+  const authToken = localStorage.getItem('token') || ''; 
 
   const { 
     visibleImages, 
@@ -27,11 +27,17 @@ const GroupScreen: React.FC = () => {
     setImagesData 
   } = useImageLoader(
     `http://localhost:3001/images/group`,
-    '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
+    authToken,
   );
 
   const joinGroup = async (groupName: string) => {
-    await axios.post(`http://localhost:3001/user-groups/${groupName}/join`, { userId })
+    await axios.post(`http://localhost:3001/user-groups/${groupName}/join`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
       .then(() => {
         alert('You have successfully joined the group!');
         setJoined(true);
@@ -49,7 +55,9 @@ const GroupScreen: React.FC = () => {
 
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
-      await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { params: { userId } })
+      await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { 
+        headers: { Authorization: `Bearer ${authToken}` },
+      })
         .then(response => {
           if (response.data.isMember) {
             getImages('','',groupName);
@@ -62,7 +70,9 @@ const GroupScreen: React.FC = () => {
     };  
 
     const getGroupInfo = async () => {
-      await axios.get(`http://localhost:3001/user-groups/${groupName}/details`)
+      await axios.get(`http://localhost:3001/user-groups/${groupName}/details`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      })
         .then(response => {
           setGroupInfo(response.data);
         })
@@ -96,7 +106,7 @@ const GroupScreen: React.FC = () => {
             </Typography>
             {visibleImages.length > 0 ?
               visibleImages.map((image: Image) => (
-                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
               ))
               :
               <Typography style={{marginTop: 180, fontSize: 28}}>No images in this group</Typography>
