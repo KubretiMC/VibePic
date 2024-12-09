@@ -7,9 +7,10 @@ import { useImageLoader } from '../../../hooks/useImageLoader';
 import UserDropdown from '../../../components/UserDropdown';
 
 const HomeScreen: React.FC = () => {
+  const authToken = localStorage.getItem('token') || ''; 
   const { visibleImages, likeStatuses, dateFilter, likedFilter, updateDateFilter, updateLikeFilter } = useImageLoader(
     `http://localhost:3001/images`,
-    '59995a1b-a2c6-11ef-aafe-8c1645e72e09'
+    authToken
   );
 
   return (
@@ -18,7 +19,7 @@ const HomeScreen: React.FC = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <UserDropdown />
         {visibleImages.map((image: Image) => (
-          <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+          <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
         ))}
       </Box>
     </Box>

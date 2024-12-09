@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import '../screen/StartScreen.css';
+import axios from 'axios';
 
 interface RegisterFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -11,10 +12,43 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleRegister = async () => {
+    if (password !== passwordConfirm) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/auth/register', {
+        username,
+        email,
+        password,
+      });
+
+      if (response.data) {
+        setIsLoginModalOpen(true);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || 'Registration failed');
+      } else {
+        setErrorMessage('An error occurred');
+      }
+    }
+  };
 
   return (
     <Box className="modal">
         <Typography style={{fontSize: '22px'}}>Registration</Typography>
+        
+        {errorMessage && (
+          <Typography style={{ color: 'red', marginBottom: '8px' }}>
+            {errorMessage}
+          </Typography>
+        )}
+
         <TextField
             label="Username"
             variant="outlined"
@@ -23,12 +57,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             slotProps={{
-                input: {
-                style: { color: 'white' },
-                },
-                inputLabel: {
-                style: { color: 'white' },
-                },
+                input: { style: { color: 'white' } },
+                inputLabel: { style: { color: 'white' } },
             }}
         />
         <TextField
@@ -40,12 +70,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             slotProps={{
-                input: {
-                    style: { color: 'white' },
-                },
-                inputLabel: {
-                    style: { color: 'white' },
-                },
+                input: { style: { color: 'white' } },
+                inputLabel: { style: { color: 'white' } },
             }}
         />
         <TextField
@@ -57,12 +83,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             slotProps={{
-                input: {
-                style: { color: 'white' },
-                },
-                inputLabel: {
-                style: { color: 'white' },
-                },
+                input: { style: { color: 'white' } },
+                inputLabel: { style: { color: 'white' } },
             }}
         />
         <TextField
@@ -74,21 +96,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
             slotProps={{
-                input: {
-                style: { color: 'white' },
-                },
-                inputLabel: {
-                style: { color: 'white' },
-                },
+                input: { style: { color: 'white' } },
+                inputLabel: { style: { color: 'white' } },
             }}
         />
 
-        <Button variant="contained" onClick={() => ''} style={{ marginTop: '16px' }}>Register</Button>
+        <Button variant="contained" onClick={handleRegister} style={{ marginTop: '16px' }}>
+            Register
+        </Button>
+        
         <Typography variant="body2" style={{ marginTop: '16px', color: 'white' }}>
-        Already have an account?{' '}
-        <Link component="button" onClick={() => setIsLoginModalOpen(true)} style={{ color: 'white' }}>
-            Login
-        </Link>
+            Already have an account?{' '}
+            <Link component="button" onClick={() => setIsLoginModalOpen(true)} style={{ color: 'white' }}>
+                Login
+            </Link>
         </Typography>
     </Box>
   );

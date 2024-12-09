@@ -4,7 +4,7 @@ import { Image } from '../models/Image';
 
 export const useImageLoader = (
   endpoint: string,
-  userId: string,
+  authToken: string
 ) => {
   const [loading, setLoading] = useState(false);
   const [imagesData, setImagesData] = useState<Image[]>([]);
@@ -25,7 +25,8 @@ export const useImageLoader = (
       setVisibleImages((prev) => [...prev, ...nextImages]); 
       const newImageIds = nextImages.map((img) => img.id).join(',');;
       const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId, imageIds: newImageIds },
+        headers: { Authorization: `Bearer ${authToken}` },
+        params: { imageIds: newImageIds },
       });
       setLikeStatuses((prev) => ({
         ...prev,
@@ -48,6 +49,7 @@ export const useImageLoader = (
   const getImages = async (week?: string, mostLiked?: string, groupName?: string) => {
     try {
       const response = await axios.get(endpoint,  {
+        headers: { Authorization: `Bearer ${authToken}` },
         params: { 
           week: week || undefined, 
           mostLiked: mostLiked || undefined,
@@ -59,7 +61,8 @@ export const useImageLoader = (
       setVisibleImages(images.slice(0, 10));
       const imageIds = images.map((img: Image) => img.id).join(',');;
       const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
-        params: { userId, imageIds },
+        headers: { Authorization: `Bearer ${authToken}` },
+        params: { imageIds },
       });
       setLikeStatuses(likeStatusResponse.data.likeStatuses);
     } catch (error) {

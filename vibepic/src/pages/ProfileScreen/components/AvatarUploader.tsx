@@ -7,12 +7,12 @@ import ActionButtons from '../components/ActionButtons';
 
 interface AvatarUploaderProps {
   userAvatarUrl?: string;
-  userId: string;
   onAvatarUpdate: (newAvatarUrl: string) => void;
   setIsLoading: (loading: boolean) => void;
+  authToken: string;
 }
 
-const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, onAvatarUpdate, setIsLoading }) => {
+const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatarUpdate, setIsLoading, authToken }) => {
   const cropperRef = useRef<ReactCropperElement>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
 
@@ -32,12 +32,14 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, userId, 
         if (blob) {
           const formData = new FormData();
           formData.append('file', blob);
-          formData.append('userId', userId);
           setIsLoading(true);
           try {
             const response = await fetch(`http://localhost:3001/users/upload-avatar`, {
               method: 'POST',
               body: formData,
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
             });
             const data = await response.json();
             onAvatarUpdate(data.avatarUrl);

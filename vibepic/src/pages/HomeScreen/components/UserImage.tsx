@@ -9,12 +9,12 @@ import axios from 'axios';
 interface UserImageProps {
   image: Image;
   liked: boolean;
+  authToken: string;
 }
 
-const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => {
+const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authToken }) => {
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
-  const userId = '59995a1b-a2c6-11ef-aafe-8c1645e72e09';
 
   useEffect(() => {
     setLiked(initialLiked);
@@ -23,8 +23,12 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => 
   const likeImage = async () => {
     try {
       await axios.post('http://localhost:3001/likes/like', {
-        userId,
         imageId: image.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
       setLiked(true);
@@ -37,8 +41,12 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => 
   const unlikeImage = async () => {
     try {
       await axios.post('http://localhost:3001/likes/unlike', {
-        userId,
         imageId: image.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
       setLiked(false);
