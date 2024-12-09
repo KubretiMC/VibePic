@@ -116,14 +116,11 @@ const ProfileScreen: React.FC = () => {
   const handleDeleteImage = async (image: Image) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:3001/images/${image.id}`, { 
+      await axios.delete(`http://localhost:3001/images/${image.id}`, {
         headers: { Authorization: `Bearer ${authToken}` },
-        method: 'DELETE' 
       });
-      if (!response.ok) {
-        throw new Error('Failed to delete image');
-      }
-      setImages(prevImages => prevImages.filter(img => img.id !== image.id));
+    
+      setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
       setSelectedImage(null);
     } catch (error) {
       console.error('Error deleting image:', error);

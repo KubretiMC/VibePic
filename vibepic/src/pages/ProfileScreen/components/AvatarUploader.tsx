@@ -4,6 +4,7 @@ import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ActionButtons from '../components/ActionButtons';
+import axios from 'axios';
 
 interface AvatarUploaderProps {
   userAvatarUrl?: string;
@@ -34,14 +35,12 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           formData.append('file', blob);
           setIsLoading(true);
           try {
-            const response = await fetch(`http://localhost:3001/users/upload-avatar`, {
-              method: 'POST',
-              body: formData,
+            const response = await axios.post('http://localhost:3001/users/upload-avatar', formData, {
               headers: {
                 Authorization: `Bearer ${authToken}`,
               },
             });
-            const data = await response.json();
+            const data = response.data;
             onAvatarUpdate(data.avatarUrl);
             setAvatarImage(null);
           } catch (error) {

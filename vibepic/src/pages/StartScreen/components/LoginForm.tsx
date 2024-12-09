@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography, Alert } from '@mui/material';
 import '../screen/StartScreen.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface LoginFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -16,17 +17,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post('http://localhost:3001/auth/login', {
+        username,
+        password,
       });
-
-      if (!response.ok) {
-        throw new Error('Invalid username or password');
-      }
-
-      const { token } = await response.json();
+    
+      const { token } = response.data;
+    
       localStorage.setItem('token', token);
       navigate('/home');
     } catch (err: any) {

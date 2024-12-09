@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Group } from '../../../models/Group';
 import ActionButtons from '../components/ActionButtons';
+import axios from 'axios';
 
 interface AddPhotoDialogProps {
   open: boolean;
@@ -64,14 +65,12 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/images/upload`, {
-        method: 'POST',
-        body: formDataToSend,
+      const response = await axios.post('http://localhost:3001/images/upload', formDataToSend, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      const data = await response.json();
+      const data = response.data;
 
       if (data.image) {
         onImageUploadSuccess(data.image);
