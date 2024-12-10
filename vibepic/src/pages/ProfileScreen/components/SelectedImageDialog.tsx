@@ -4,12 +4,14 @@ import { Image } from '../../../models/Image';
 
 interface SelectedImageDialogProps {
   selectedImage: Image | null;
+  deleteButtonText: string;
   onClose: () => void;
   onDelete: (image: Image) => void;
 }
 
 const SelectedImageDialog: React.FC<SelectedImageDialogProps> = ({
   selectedImage,
+  deleteButtonText,
   onClose,
   onDelete,
 }) => {
@@ -51,7 +53,7 @@ const SelectedImageDialog: React.FC<SelectedImageDialogProps> = ({
           }}
           onClick={() => onDelete(selectedImage)}
         >
-          Delete
+          {deleteButtonText}
         </Button>
       </DialogContent>
     </Dialog>

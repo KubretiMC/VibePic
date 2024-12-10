@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Link, TextField, Typography, Alert } from '@mui/material';
+import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import '../screen/StartScreen.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -13,7 +13,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
     try {
@@ -26,8 +26,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
     
       localStorage.setItem('token', token);
       navigate('/home');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || 'Registration failed');
+      } else {
+        setErrorMessage('An error occurred');
+      }
     }
   };
 
@@ -35,7 +39,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
     <Box className="modal">
       <Typography style={{ fontSize: '22px' }}>Welcome to VibePic</Typography>
       
-      {error && <Alert severity="error" style={{ marginBottom: '16px' }}>{error}</Alert>}
+      {errorMessage && (
+          <Typography style={{ color: 'red', marginBottom: '8px' }}>
+            {errorMessage}
+          </Typography>
+      )}
       
       <TextField
         label="Username"

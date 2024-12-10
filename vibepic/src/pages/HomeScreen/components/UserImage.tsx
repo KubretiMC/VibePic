@@ -63,7 +63,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
           <Box sx={{ flexShrink: 0, width: 800, height: 400, border: 1 }}>
             <img
               src={image.imagePath}
-              alt="VibePic Image"
+              alt="VibePic"
               style={{ width: 800, height: 400 }}
             />
           </Box>

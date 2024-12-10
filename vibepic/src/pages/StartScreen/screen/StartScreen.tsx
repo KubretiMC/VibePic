@@ -6,8 +6,12 @@ import image2 from '../../../images/image-2.png';
 import image3 from '../../../images/image-3.png';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
+import { JwtPayload } from '../../../models/JwtPayload';
 
 const StartScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(true);
 
@@ -17,9 +21,24 @@ const StartScreen: React.FC = () => {
   };
 
   useEffect(() => {
+    const checkToken = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const { exp } = jwtDecode<JwtPayload>(token);
+          if (exp * 1000 > Date.now()) {
+            navigate('/home');
+          }
+        } catch (error) {
+          console.error('Error decoding token:', error);
+        }
+      }
+    };
+    checkToken();
+
     const randomImage = getRandomImage();
     setBackgroundImage(randomImage);
-  }, [])
+  }, [navigate ])
 
   return (
     <Box className="container" style={{ backgroundImage: `url(${backgroundImage})` }}>

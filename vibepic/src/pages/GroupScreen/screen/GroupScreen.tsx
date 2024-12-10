@@ -48,10 +48,10 @@ const GroupScreen: React.FC = () => {
   }
 
   useEffect(() => {
-      if(joined) {
-        getImages(dateFilter, likedFilter, groupName);
-      }
-  }, [joined, dateFilter, groupName, likedFilter]);
+    if(joined) {
+      getImages(dateFilter, likedFilter, groupName);
+    }
+  }, [joined, dateFilter, groupName, likedFilter, getImages]);
 
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
@@ -86,7 +86,7 @@ const GroupScreen: React.FC = () => {
     setImagesData([]);
     setVisibleImages([]);
     checkGroupMembership(groupName);
-  }, [groupName]);
+  }, [groupName, authToken, getImages, setImagesData, setVisibleImages]);
 
   return (
     <Box display="flex">

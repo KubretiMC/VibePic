@@ -40,7 +40,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
       });
     };
     getGroupNames();
-  }, []);
+  }, [authToken]);
 
   const handleGroupClick = (group: string) => {
     if(groupName ===  group.toLowerCase()) {

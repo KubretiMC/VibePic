@@ -9,28 +9,20 @@ const UserDropdown: React.FC = () => {
 
   const userName = 'mariqn';
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleProfileClick = () => {
     navigate('/profile');
-    handleMenuClose();
   };
 
   const handleLogoutClick = () => {
-    handleMenuClose();
+    localStorage.removeItem('token');
+    navigate('/');
   };
 
   return (
     <>
       <Button
         sx={{ position: 'absolute', top: 16, right: 16, display: 'flex' }}
-        onClick={handleMenuOpen}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
       >
         <Typography fontWeight="bold" color="black" variant="body2">
           {userName}
@@ -41,7 +33,7 @@ const UserDropdown: React.FC = () => {
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={() =>   setAnchorEl(null)}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
