@@ -38,7 +38,7 @@ const StartScreen: React.FC = () => {
 
     const randomImage = getRandomImage();
     setBackgroundImage(randomImage);
-  }, [])
+  }, [navigate ])
 
   return (
     <Box className="container" style={{ backgroundImage: `url(${backgroundImage})` }}>

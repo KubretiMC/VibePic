@@ -81,7 +81,7 @@ const ProfileScreen: React.FC = () => {
     };
     getUserInfo();
     getGroupNames();
-  }, []);
+  }, [authToken]);
 
   useEffect(() => {
     const fetchImagesByUploader = async () => {
@@ -110,7 +110,7 @@ const ProfileScreen: React.FC = () => {
     } else {
       fetchLikedImages();
     }
-  }, [activeTab]);
+  }, [activeTab, authToken]);
 
   
   const handleDeleteImage = async (image: Image) => {
