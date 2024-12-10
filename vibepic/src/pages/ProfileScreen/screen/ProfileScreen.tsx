@@ -145,7 +145,7 @@ const ProfileScreen: React.FC = () => {
       console.error('Error unliking the image:', error);
     }
   };
-  console.log('activeTab', activeTab);
+  
   return (
     <Box display="flex">
       <Drawer
