@@ -129,6 +129,23 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const unlikeImage = async (image: Image) => {
+    try {
+      await axios.post('http://localhost:3001/likes/unlike', {
+        imageId: image.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
+      setSelectedImage(null);
+    } catch (error) {
+      console.error('Error unliking the image:', error);
+    }
+  };
+  console.log('activeTab', activeTab);
   return (
     <Box display="flex">
       <Drawer
@@ -272,8 +289,9 @@ const ProfileScreen: React.FC = () => {
 
         <SelectedImageDialog
           selectedImage={selectedImage}
+          deleteButtonText={activeTab === 0 ? "Delete" : "Unlike"}
           onClose={() => setSelectedImage(null)}
-          onDelete={handleDeleteImage}
+          onDelete={activeTab === 0 ? handleDeleteImage : unlikeImage}
         />
 
         <AddPhotoDialog

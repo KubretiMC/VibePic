@@ -2,6 +2,7 @@
 - made JWT expiration validation
 - email check if it already exists during registration made
 - all warnings fixed
+- made unliking liked images from profile screen
 
 ## [2.0.0] - 2024-12-09
 - made JWT autorization for all the endpoints
