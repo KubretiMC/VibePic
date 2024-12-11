@@ -63,7 +63,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
       sx={{
         width: isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160 , boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+        [`& .MuiDrawer-paper`]: { width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
       }}
     >
       <Box p={2} role="presentation">

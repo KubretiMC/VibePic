@@ -17,9 +17,11 @@ import { Group } from '../../../models/Group';
 import AvatarUploader from '../components/AvatarUploader';
 import AddPhotoDialog from '../components/AddPhotoDialog';
 import SelectedImageDialog from '../components/SelectedImageDialog';
+import useBreakpoints from '../../../hooks/useBreakpoints';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { isLargeScreen, isMediumScreen } = useBreakpoints();
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<Image[]>([]);
   const [user, setUser] = useState<User>();
@@ -151,9 +153,9 @@ const ProfileScreen: React.FC = () => {
       <Drawer
           variant="permanent"
           sx={{
-            width: 240,
+            width: isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
             flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+            [`& .MuiDrawer-paper`]: { width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
           }}
         >
           <Button
@@ -165,7 +167,7 @@ const ProfileScreen: React.FC = () => {
                 display: 'block',
             }}
           >
-            <Typography style={{fontSize: 24, color: 'white', textAlign:'left'}}>
+            <Typography style={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
                 Home
             </Typography>
           </Button>

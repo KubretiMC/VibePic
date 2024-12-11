@@ -81,7 +81,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                 justifyContent: 'space-between', 
                 width: isLargeScreen ? '220px' : '140px', 
                 height: '100%', 
-                paddingRight: 1,
+                paddingRight: isLargeScreen ? 8 : isMediumScreen ?  2 : 8,
               }}>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
@@ -94,7 +94,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                 {!isLargeScreen &&
                 <Typography fontStyle={{ color: 'white' }} width={40} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
                 }
-                <Typography variant="body2">{image.description}</Typography>
+                <Typography style={{ wordWrap: 'break-word'}} variant="body2">{image.description}</Typography>
                 <Typography fontSize={12} variant="body2">{new Date(image.createdAt).toDateString()}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
