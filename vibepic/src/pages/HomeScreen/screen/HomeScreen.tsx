@@ -14,11 +14,11 @@ const HomeScreen: React.FC = () => {
     `http://localhost:3001/images`,
     authToken
   );
-  
+
   return (
     <Box>
       <Box display="flex">
-        {isVerySmallScreen || isMobileDrawerOpen ?
+        {!isVerySmallScreen || isMobileDrawerOpen ?
           <DrawerComponent 
             dateFilter={dateFilter}
             likedFilter={likedFilter} 
@@ -39,7 +39,7 @@ const HomeScreen: React.FC = () => {
             <Button variant="contained" style={{ fontSize: 24 }} color="primary" onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
           </Box>
           }
-        <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 0 : 5 }}>
+        <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
           <UserDropdown />
           {visibleImages.map((image: Image) => (
             <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />

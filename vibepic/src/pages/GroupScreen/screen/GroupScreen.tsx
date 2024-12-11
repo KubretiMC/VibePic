@@ -94,7 +94,7 @@ const GroupScreen: React.FC = () => {
 
   return (
     <Box display="flex">
-      {isVerySmallScreen || isMobileDrawerOpen ?
+      {!isVerySmallScreen || isMobileDrawerOpen ?
         <DrawerComponent 
           dateFilter={dateFilter} 
           updateDateFilter={updateDateFilter} 
@@ -118,7 +118,7 @@ const GroupScreen: React.FC = () => {
       }
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
-          <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 0 : 5 }}>
+          <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
             <UserDropdown />
             <Typography fontSize={36}>
               {groupInfo?.name} group

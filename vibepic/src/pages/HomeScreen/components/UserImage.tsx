@@ -14,7 +14,7 @@ interface UserImageProps {
 }
 
 const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authToken }) => {
-  const { isLargeScreen, isMediumScreen, isSmallScreen } = useBreakpoints();
+  const { isLargeScreen, isMediumScreen, isSmallScreen, isVerySmallScreen } = useBreakpoints();
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
 
@@ -81,9 +81,9 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                 justifyContent: 'space-between', 
                 width: isLargeScreen ? '220px' : '140px', 
                 height: '100%', 
-                paddingRight: isLargeScreen ? 8 : isMediumScreen ?  2 : 8,
+                paddingRight: isVerySmallScreen ? 0 : isLargeScreen ? 8 : isMediumScreen ?  2 : 8,
               }}>
-              <Box>
+              <Box sx={{paddingRight: isVerySmallScreen ? 5 : 0}}>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
                   <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>
                   <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
@@ -98,14 +98,14 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                 <Typography fontSize={12} variant="body2">{new Date(image.createdAt).toDateString()}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
-                <Typography variant="caption" fontWeight={"bold"} fontSize={18}>Likes: {likes}</Typography>
+                <Typography variant="caption" fontWeight={"bold"} fontSize={16}>Likes: {likes}</Typography>
                 {liked ? (
                   <Button onClick={unlikeImage} style={{ paddingLeft: 0, boxShadow: 'none', outline: 'none' }}>
-                    <FavoriteIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
+                    <FavoriteIcon sx={{ color: 'red', marginLeft: 1, marginRight: 4 }} />
                   </Button>
                 ) : (
                   <Button onClick={likeImage} style={{ paddingLeft: 0, boxShadow: 'none', outline: 'none' }}>
-                    <FavoriteBorderOutlinedIcon sx={{ marginLeft: 1, marginRight: 2 }} color='disabled' />
+                    <FavoriteBorderOutlinedIcon sx={{ marginLeft: 1, marginRight: 4 }} color='disabled' />
                   </Button>
                 )}
               </Box>
