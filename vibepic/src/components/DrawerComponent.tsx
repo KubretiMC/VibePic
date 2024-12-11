@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Drawer, Typography } from '@mui/material';
+import { Box, Button, Drawer, Typography, useMediaQuery } from '@mui/material';
 import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import useBreakpoints from '../hooks/useBreakpoints';
 
 const timeFilterDisplayNames: {
   'This Week': string;
@@ -24,6 +25,7 @@ interface DrawerComponentProps {
 const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter }) => {
   const authToken = localStorage.getItem('token'); 
   const navigate = useNavigate();
+  const { isLargeScreen, isMediumScreen } = useBreakpoints();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
   
@@ -59,9 +61,9 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
     <Drawer
       variant="permanent"
       sx={{
-        width: 240,
+        width: isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+        [`& .MuiDrawer-paper`]: { width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160 , boxSizing: 'border-box', backgroundColor: '#00A2E8' },
       }}
     >
       <Box p={2} role="presentation">
@@ -73,7 +75,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
               display: 'block',
           }}
         >
-            <Typography style={{fontSize: 24, color: 'white'}}>
+            <Typography style={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white'}}>
                 Home
             </Typography>
         </Button>

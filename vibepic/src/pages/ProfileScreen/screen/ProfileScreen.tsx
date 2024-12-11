@@ -227,7 +227,7 @@ const ProfileScreen: React.FC = () => {
         </Box>
 
         <Box sx={{ marginTop: 4, marginBottom: 2, width: '80%' }}>
-          <Grid2 container spacing={2} justifyContent="center">
+          <Grid2 container spacing={2} justifyContent={images.length === 0 ? "center" : "flex-start"}>
             {activeTab === 0 &&
               <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
                 <label
@@ -267,23 +267,29 @@ const ProfileScreen: React.FC = () => {
                 </label>
               </Grid2>
             }
-            {images.map((image) => (
-              <Grid2 key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <Box
-                  component="img"
-                  src={image.imagePath}
-                  alt={image.description}
-                  sx={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'cover',
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setSelectedImage(image)}
-                />
-              </Grid2>
-            ))}
+            {activeTab === 1 && images.length === 0 ? 
+              <>
+              <Typography fontSize={40}>No images liked</Typography>
+              </>
+              :
+              images.map((image) => (
+                <Grid2 key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Box
+                    component="img"
+                    src={image.imagePath}
+                    alt={image.description}
+                    sx={{
+                      width: '100%',
+                      height: '200px',
+                      objectFit: 'cover',
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => setSelectedImage(image)}
+                  />
+                </Grid2>
+              ))
+            }
           </Grid2>
         </Box>
 

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography, useMediaQuery } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import useBreakpoints from '../hooks/useBreakpoints';
 
 interface CategoryProps {
     categoryName: string;
@@ -11,10 +12,12 @@ interface CategoryProps {
 }
 
 const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, selectedProp }) => {
+  const { isLargeScreen, isMediumScreen } = useBreakpoints();
+  
   return (
     <Accordion elevation={0} style={{backgroundColor: '#00A2E8'}} defaultExpanded={!!selectedProp}>
         <AccordionSummary className='acccordion-summary' expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
-            <Typography fontSize={24} color='white'>{categoryName}</Typography>
+            <Typography style={{ fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16 }} color='white'>{categoryName}</Typography>
         </AccordionSummary>
         <AccordionDetails style={{ paddingTop: 0 }} className='accordion-details'>
         {items.map((category, key) => (

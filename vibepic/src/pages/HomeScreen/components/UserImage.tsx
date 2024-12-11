@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid2, Typography } from '@mui/material';
+import { Box, Button, Grid2, Typography, useMediaQuery } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { Image } from '../../../models/Image';
 import axios from 'axios';
+import useBreakpoints from '../../../hooks/useBreakpoints';
 
 interface UserImageProps {
   image: Image;
@@ -13,6 +14,7 @@ interface UserImageProps {
 }
 
 const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authToken }) => {
+  const { isLargeScreen, isMediumScreen, isSmallScreen } = useBreakpoints();
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
 
@@ -58,24 +60,40 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
 
   return (
     <Grid2 container spacing={2}>
-      <Grid2 size={{ xs: 12, md: 4 }}>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, display: 'flex' }}>
-          <Box sx={{ flexShrink: 0, width: 800, height: 400, border: 1 }}>
-            <img
-              src={image.imagePath}
-              alt="VibePic"
-              style={{ width: 800, height: 400 }}
-            />
-          </Box>
-
-          <Box sx={{ flexGrow: 1, textAlign: 'left', border: 1, paddingLeft: 2 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '220px', height: '100%', paddingRight: 1 }}>
+        <Box component="main" sx={{ flex: 1, p: 3, display: 'flex' }}>
+        <Grid2 sx={{ width: isLargeScreen ? '90%' : '80%' }}>
+          <Box
+            component="img"
+            src={image.imagePath}
+            alt={image.description}
+            sx={{
+              width: '100%',
+              height: '100%',
+              maxHeight: isLargeScreen ? '400px' : isMediumScreen ? '350px' : isSmallScreen ? '300px' : '250px',
+            }}
+          />
+        </Grid2>
+        <Grid2 sx={{ textAlign: 'left', border: 1, paddingLeft: 2, height: isLargeScreen ? '400px' : isMediumScreen ? '350px' : isSmallScreen ? '300px' : '250px' }}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'space-between', 
+                width: isLargeScreen ? '220px' : '140px', 
+                height: '100%', 
+                paddingRight: 1,
+              }}>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
                   <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>
                   <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
-                  <Typography fontStyle={{ color: 'white' }} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
+                  {isLargeScreen &&
+                    <Typography fontStyle={{ color: 'white' }} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
+                  }
                 </Box>
+                {!isLargeScreen &&
+                <Typography fontStyle={{ color: 'white' }} width={40} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
+                }
                 <Typography variant="body2">{image.description}</Typography>
                 <Typography fontSize={12} variant="body2">{new Date(image.createdAt).toDateString()}</Typography>
               </Box>
@@ -92,9 +110,8 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                 )}
               </Box>
             </Box>
-          </Box>
+        </Grid2>
         </Box>
-      </Grid2>
     </Grid2>
   );
 };
