@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Button } from '@mui/material';
 import UserImage from '../components/UserImage';
 import { Image } from '../../../models/Image';

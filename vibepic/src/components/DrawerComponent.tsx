@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Drawer, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Drawer, Typography } from '@mui/material';
 import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -66,7 +66,11 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
       sx={{
         width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 160, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+        '& .MuiDrawer-paper': {
+          width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 160,
+          boxSizing: 'border-box',
+          backgroundColor: '#00A2E8'
+        }
       }}
     >
       <Box p={2} role="presentation">

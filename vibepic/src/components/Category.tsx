@@ -1,5 +1,5 @@
 import React from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography, useMediaQuery } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import useBreakpoints from '../hooks/useBreakpoints';

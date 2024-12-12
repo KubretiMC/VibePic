@@ -1,3 +1,6 @@
+## [2.0.1] - 2024-12-12
+- made responsiveness to group and home screen
+
 ## [2.0.1] - 2024-12-10
 - made JWT expiration validation
 - email check if it already exists during registration made
