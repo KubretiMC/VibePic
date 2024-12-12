@@ -3,6 +3,7 @@ import { Box, Button, Drawer, Typography } from '@mui/material';
 import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import useBreakpoints from '../hooks/useBreakpoints';
 
 const timeFilterDisplayNames: {
   'This Week': string;
@@ -19,11 +20,14 @@ interface DrawerComponentProps {
   updateDateFilter: (dateFilter: string) => void;
   likedFilter: string;
   updateLikeFilter: (likeFilter: string) => void;
+  isMobileDrawerOpen: boolean;
+  setIsMobileDrawerOpen: (isMobileDrawerOpen: boolean) => void;
 }
 
-const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter }) => {
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter, isMobileDrawerOpen, setIsMobileDrawerOpen }) => {
   const authToken = localStorage.getItem('token'); 
   const navigate = useNavigate();
+  const { isLargeScreen, isMediumScreen } = useBreakpoints();
   const [groups, setGroups] = useState<string[]>([]);
   const { groupName = '' } = useParams<{ groupName: string }>();
   
@@ -48,6 +52,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
     } else {
       navigate(`/groups/${group.toLowerCase()}`);
     }
+    setIsMobileDrawerOpen(false);
   };
 
   const getKeyFromValue = (value: string) => {
@@ -59,9 +64,13 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
     <Drawer
       variant="permanent"
       sx={{
-        width: 240,
+        width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
+        '& .MuiDrawer-paper': {
+          width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 160,
+          boxSizing: 'border-box',
+          backgroundColor: '#00A2E8'
+        }
       }}
     >
       <Box p={2} role="presentation">
@@ -73,7 +82,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
               display: 'block',
           }}
         >
-            <Typography style={{fontSize: 24, color: 'white'}}>
+            <Typography style={{fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white'}}>
                 Home
             </Typography>
         </Button>
@@ -81,18 +90,21 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
           categoryName="Groups" 
           items={groups} 
           onItemClick={handleGroupClick} 
+          isMobileDrawerOpen={isMobileDrawerOpen}
           selectedProp={groupName} 
         />
         <Category 
           categoryName="Time" 
           items={Object.keys(timeFilterDisplayNames)} 
           onItemClick={(item) => updateDateFilter(timeFilterDisplayNames[item as 'This Week' | 'Last Week' | 'Week Before Last'])} 
+          isMobileDrawerOpen={isMobileDrawerOpen}
           selectedProp={getKeyFromValue(dateFilter)} 
         />
         <Category 
           categoryName="Popularity" 
           items={["Most liked images"]} 
           onItemClick={() => updateLikeFilter('images')} 
+          isMobileDrawerOpen={isMobileDrawerOpen}
           selectedProp={likedFilter && 'Most liked images'} 
         />
       </Box>

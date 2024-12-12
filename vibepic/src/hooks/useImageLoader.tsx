@@ -12,6 +12,7 @@ export const useImageLoader = (
   const [likeStatuses, setLikeStatuses] = useState<{ [imageId: string]: boolean }>({});
   const [dateFilter, setDateFilter] = useState('');
   const [likedFilter, setLikedFilter] = useState('');
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const getImages = useCallback(
     async (week?: string, mostLiked?: string, groupName?: string) => {
@@ -46,6 +47,7 @@ export const useImageLoader = (
     } else {
       setDateFilter(newDateFilter);
     }
+    setIsMobileDrawerOpen(false);
   };
 
   const updateLikeFilter = (newLikeFilter: string) => {
@@ -55,6 +57,7 @@ export const useImageLoader = (
     } else {
       setLikedFilter('images');
     }
+    setIsMobileDrawerOpen(false);
   };
 
   useEffect(() => {
@@ -98,10 +101,12 @@ export const useImageLoader = (
     likeStatuses,
     dateFilter,
     likedFilter,
+    isMobileDrawerOpen,
     getImages,
     updateDateFilter,
     updateLikeFilter,
     setVisibleImages,
-    setImagesData
+    setImagesData,
+    setIsMobileDrawerOpen
   };
 };

@@ -8,8 +8,10 @@ import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
 import { useImageLoader } from '../../../hooks/useImageLoader';
 import UserDropdown from '../../../components/UserDropdown';
+import useBreakpoints from '../../../hooks/useBreakpoints';
 
 const GroupScreen: React.FC = () => {
+  const { isMediumScreen, isVerySmallScreen } = useBreakpoints();
   const { groupName = '' } = useParams<{ groupName: string }>();
   const [joined, setJoined] = useState(false);
   const [groupInfo, setGroupInfo] = useState<Group>();
@@ -20,11 +22,13 @@ const GroupScreen: React.FC = () => {
     likeStatuses, 
     dateFilter, 
     likedFilter, 
+    isMobileDrawerOpen,
     getImages, 
     updateDateFilter, 
     updateLikeFilter, 
     setVisibleImages, 
-    setImagesData 
+    setImagesData,
+    setIsMobileDrawerOpen
   } = useImageLoader(
     `http://localhost:3001/images/group`,
     authToken,
@@ -90,10 +94,31 @@ const GroupScreen: React.FC = () => {
 
   return (
     <Box display="flex">
-      <DrawerComponent dateFilter={dateFilter} updateDateFilter={updateDateFilter} likedFilter={likedFilter} updateLikeFilter={updateLikeFilter} />
+      {!isVerySmallScreen || isMobileDrawerOpen ?
+        <DrawerComponent 
+          dateFilter={dateFilter} 
+          updateDateFilter={updateDateFilter} 
+          likedFilter={likedFilter}
+          updateLikeFilter={updateLikeFilter}
+          isMobileDrawerOpen={isMobileDrawerOpen}
+          setIsMobileDrawerOpen={setIsMobileDrawerOpen} 
+        />
+        :
+        <Box 
+          sx={{ 
+            backgroundColor: '#00A2E8',
+            position: 'fixed', 
+            width: '100%',
+            bottom: 0,
+            zIndex: 1000,
+          }}
+        >
+          <Button variant="contained" style={{ fontSize: 24 }} color="primary" onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
+        </Box>
+      }
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {joined ? (
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
             <UserDropdown />
             <Typography fontSize={36}>
               {groupInfo?.name} group
