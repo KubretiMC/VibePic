@@ -24,7 +24,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
 
   const likeImage = async () => {
     try {
-      await axios.post('http://localhost:3001/likes/like', {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/like`, {
         imageId: image.id,
       },
       {
@@ -42,7 +42,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
 
   const unlikeImage = async () => {
     try {
-      await axios.post('http://localhost:3001/likes/unlike', {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/unlike`, {
         imageId: image.id,
       },
       {

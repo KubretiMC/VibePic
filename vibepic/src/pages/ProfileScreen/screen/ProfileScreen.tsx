@@ -61,7 +61,7 @@ const ProfileScreen: React.FC = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/users`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users`, {
           headers: { Authorization: `Bearer ${authToken}` }
         });
         setUser(response.data);
@@ -71,7 +71,7 @@ const ProfileScreen: React.FC = () => {
     };
 
     const getGroupNames = async () => {
-      await axios.get('http://localhost:3001/groups/main-info', {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/groups/main-info`, {
          headers: { Authorization: `Bearer ${authToken}` }
       })
       .then(response => {
@@ -88,7 +88,7 @@ const ProfileScreen: React.FC = () => {
   useEffect(() => {
     const fetchImagesByUploader = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/images/by-uploader`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/images/by-uploader`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         setImages(response.data);
@@ -99,7 +99,7 @@ const ProfileScreen: React.FC = () => {
 
     const fetchLikedImages = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/images/liked-by-user`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/images/liked-by-user`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         setImages(response.data);
@@ -118,7 +118,7 @@ const ProfileScreen: React.FC = () => {
   const handleDeleteImage = async (image: Image) => {
     try {
       setIsLoading(true)
-      await axios.delete(`http://localhost:3001/images/${image.id}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/images/${image.id}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
     
@@ -133,7 +133,7 @@ const ProfileScreen: React.FC = () => {
 
   const unlikeImage = async (image: Image) => {
     try {
-      await axios.post('http://localhost:3001/likes/unlike', {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/unlike`, {
         imageId: image.id,
       },
       {

@@ -17,7 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/auth/login', {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
         username,
         password,
       });

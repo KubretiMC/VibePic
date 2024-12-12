@@ -21,7 +21,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/auth/register', {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, {
         username,
         email,
         password,

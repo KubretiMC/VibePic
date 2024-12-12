@@ -29,7 +29,7 @@ export const useImageLoader = (
         setImagesData(images);
         setVisibleImages(images.slice(0, 10));
         const imageIds = images.map((img: Image) => img.id).join(',');
-        const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
+        const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
           headers: { Authorization: `Bearer ${authToken}` },
           params: { imageIds },
         });
@@ -75,7 +75,7 @@ export const useImageLoader = (
       }
       setVisibleImages((prev) => [...prev, ...nextImages]);
       const newImageIds = nextImages.map((img) => img.id).join(',');
-      const likeStatusResponse = await axios.get(`http://localhost:3001/likes/batch-likes-status`, {
+      const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
         headers: { Authorization: `Bearer ${authToken}` },
         params: { imageIds: newImageIds },
       });

@@ -35,7 +35,7 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           formData.append('file', blob);
           setIsLoading(true);
           try {
-            const response = await axios.post('http://localhost:3001/users/upload-avatar', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/upload-avatar`, formData, {
               headers: {
                 Authorization: `Bearer ${authToken}`,
               },

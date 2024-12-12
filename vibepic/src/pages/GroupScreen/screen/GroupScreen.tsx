@@ -30,12 +30,12 @@ const GroupScreen: React.FC = () => {
     setImagesData,
     setIsMobileDrawerOpen
   } = useImageLoader(
-    `http://localhost:3001/images/group`,
+    `${process.env.REACT_APP_BACKEND_URL}/images/group`,
     authToken,
   );
 
   const joinGroup = async (groupName: string) => {
-    await axios.post(`http://localhost:3001/user-groups/${groupName}/join`,
+    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/join`,
       {},
       {
         headers: {
@@ -59,7 +59,7 @@ const GroupScreen: React.FC = () => {
 
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
-      await axios.get(`http://localhost:3001/user-groups/${groupName}/is-member`, { 
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/is-member`, { 
         headers: { Authorization: `Bearer ${authToken}` },
       })
         .then(response => {
@@ -74,7 +74,7 @@ const GroupScreen: React.FC = () => {
     };  
 
     const getGroupInfo = async () => {
-      await axios.get(`http://localhost:3001/user-groups/${groupName}/details`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/details`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })
         .then(response => {

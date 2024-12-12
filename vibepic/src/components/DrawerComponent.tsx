@@ -33,7 +33,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
   
   useEffect(() => {
     const getGroupNames = async () => {
-      await axios.get('http://localhost:3001/groups/names', {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/groups/names`, {
         headers: { Authorization: `Bearer ${authToken}` }
       })
       .then(response => {

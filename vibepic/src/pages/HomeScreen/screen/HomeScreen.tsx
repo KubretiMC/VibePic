@@ -11,7 +11,7 @@ const HomeScreen: React.FC = () => {
   const { isMediumScreen, isVerySmallScreen } = useBreakpoints();
   const authToken = localStorage.getItem('token') || ''; 
   const { visibleImages, likeStatuses, dateFilter, likedFilter,isMobileDrawerOpen, updateDateFilter, updateLikeFilter, setIsMobileDrawerOpen } = useImageLoader(
-    `http://localhost:3001/images`,
+    `${process.env.REACT_APP_BACKEND_URL}/images`,
     authToken
   );
 
