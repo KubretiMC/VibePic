@@ -1,3 +1,9 @@
+## [2.1.0] - 2024-12-16
+- added close button to drawer on smaller screens
+- made to show user name and user avatar right to the uploaded image
+- fixed the showing of the filters on smaller screens
+- added image description limit (60 characters)
+
 ## [2.0.1] - 2024-12-12
 - made responsiveness to group and home screen
 

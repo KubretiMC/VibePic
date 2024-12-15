@@ -85,8 +85,16 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
               }}>
               <Box sx={{paddingRight: isVerySmallScreen ? 5 : 0}}>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginY: 1 }}>
-                  <Typography fontWeight={"bold"} variant="body2">{image.uploaderName}</Typography>
-                  <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
+                  <Typography fontWeight={"bold"} fontSize={isVerySmallScreen ? 14 : 26} variant="body2">{image.uploaderName}</Typography>
+                  {image.uploaderAvatar ? 
+                    <img
+                      style={{ width: isVerySmallScreen ? '20px' : '30px', height: isVerySmallScreen ? '20px' : '30px', marginLeft: 5, borderRadius: 50 }}
+                      src={image.uploaderAvatar}
+                      alt="Current Avatar"
+                    />
+                    :
+                    <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2,  fontSize: isVerySmallScreen ? 24 : 40 }} />
+                  }
                   {isLargeScreen &&
                     <Typography fontStyle={{ color: 'white' }} bgcolor={"orange"} paddingX={2} paddingY={0.2} borderRadius={2} variant="body2">{image.groupName}</Typography>
                   }

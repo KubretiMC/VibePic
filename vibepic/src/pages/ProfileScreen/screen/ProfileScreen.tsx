@@ -21,7 +21,7 @@ import useBreakpoints from '../../../hooks/useBreakpoints';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { isLargeScreen, isMediumScreen } = useBreakpoints();
+  const { isLargeScreen, isMediumScreen, isVerySmallScreen } = useBreakpoints();
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<Image[]>([]);
   const [user, setUser] = useState<User>();
@@ -57,11 +57,11 @@ const ProfileScreen: React.FC = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
+  
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
           headers: { Authorization: `Bearer ${authToken}` }
         });
         setUser(response.data);
@@ -150,28 +150,47 @@ const ProfileScreen: React.FC = () => {
   
   return (
     <Box display="flex">
-      <Drawer
-          variant="permanent"
-          sx={{
-            width: isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160, boxSizing: 'border-box', backgroundColor: '#00A2E8' },
-          }}
-        >
-          <Button
-            onClick={() => navigate(`/home`)}
+      {!isVerySmallScreen ?
+        <Drawer
+            variant="permanent"
             sx={{
-                paddingLeft: 4,
-                paddingTop: 3,
-                textTransform: 'none',
-                display: 'block',
+              width: isLargeScreen ? 240 : isMediumScreen ? 200 : 120,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: isLargeScreen ? 240 : isMediumScreen ? 200 : 160,
+                boxSizing: 'border-box',
+                backgroundColor: '#00A2E8'
+              }
             }}
           >
-            <Typography style={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
-                Home
-            </Typography>
-          </Button>
-      </Drawer>
+            <Button
+              onClick={() => navigate(`/home`)}
+              sx={{
+                  paddingLeft: 4,
+                  paddingTop: 3,
+                  textTransform: 'none',
+                  display: 'block',
+              }}
+            >
+              <Typography style={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
+                  Home2
+              </Typography>
+            </Button>
+        </Drawer>
+        :
+        <Box 
+          sx={{ 
+            backgroundColor: '#00A2E8',
+            position: 'fixed', 
+            width: '100%',
+            bottom: 0,
+            zIndex: 1000,
+            border: 0
+          }}
+        >
+          <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => navigate(`/home`)}>Home</Button>
+        </Box>
+      }
       {isLoading && (
           <Box
             sx={{
@@ -228,7 +247,7 @@ const ProfileScreen: React.FC = () => {
           </Tabs>
         </Box>
 
-        <Box sx={{ marginTop: 4, marginBottom: 2, width: '80%' }}>
+        <Box sx={{ marginTop: 4,  marginBottom: isVerySmallScreen ? 10 : 2, width: '80%' }}>
           <Grid2 container spacing={2} justifyContent={images.length === 0 ? "center" : "flex-start"}>
             {activeTab === 0 &&
               <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>

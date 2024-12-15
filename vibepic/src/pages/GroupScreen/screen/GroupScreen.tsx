@@ -113,41 +113,43 @@ const GroupScreen: React.FC = () => {
             zIndex: 1000,
           }}
         >
-          <Button variant="contained" style={{ fontSize: 24 }} color="primary" onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
+          <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
         </Box>
       }
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {joined ? (
-          <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
-            <UserDropdown />
-            <Typography fontSize={36}>
-              {groupInfo?.name} group
-            </Typography>
-            <Typography fontSize={24}>
-              {groupInfo?.description}
-            </Typography>
-            <Typography fontSize={18}>
-              Members: {groupInfo?.memberCount}
-            </Typography>
-            {visibleImages.length > 0 ?
-              visibleImages.map((image: Image) => (
-                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-              ))
-              :
-              <Typography style={{marginTop: 180, fontSize: 28}}>No images in this group</Typography>
-            }
-         </Box>
-        ) : (
-          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
-            <Typography fontSize={36}>
-              You must join this group to view its photos
-            </Typography>
-            <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
-              Join Group
-            </Button>
+      {!isMobileDrawerOpen &&
+        <Box component="main" sx={{ flexGrow: 1 }}>
+          {joined ? (
+            <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
+              <UserDropdown />
+              <Typography fontSize={36}>
+                {groupInfo?.name} group
+              </Typography>
+              <Typography fontSize={24}>
+                {groupInfo?.description}
+              </Typography>
+              <Typography fontSize={18}>
+                Members: {groupInfo?.memberCount}
+              </Typography>
+              {visibleImages.length > 0 ?
+                visibleImages.map((image: Image) => (
+                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+                ))
+                :
+                <Typography style={{marginTop: 180, fontSize: 28}}>No images in this group</Typography>
+              }
           </Box>
-        )}
-      </Box>
+          ) : (
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
+              <Typography fontSize={36}>
+                You must join this group to view its photos
+              </Typography>
+              <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
+                Join Group
+              </Button>
+            </Box>
+          )}
+        </Box>
+      }
     </Box>
   );
 };
