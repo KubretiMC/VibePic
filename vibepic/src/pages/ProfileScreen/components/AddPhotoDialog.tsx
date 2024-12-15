@@ -109,7 +109,18 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
           multiline
           rows={4}
           value={formData.imageDescription}
-          onChange={(e) => handleInputChange('imageDescription', e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.length <= 60) {
+              handleInputChange('imageDescription', value);
+            }
+          }}
+          error={formData.imageDescription.length > 60}
+          helperText={
+            formData.imageDescription.length > 60
+              ? 'Description must be 60 characters or less.'
+              : `${formData.imageDescription.length}/60`
+          }
           sx={{ marginBottom: 2 }}
         />
 

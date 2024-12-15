@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Typography, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { User } from '../models/User';
 
 const UserDropdown: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const [user, setUser] = useState<User>();
+  const authToken = localStorage.getItem('token') || ''; 
   const userName = 'mariqn';
 
   const handleProfileClick = () => {
@@ -18,6 +21,20 @@ const UserDropdown: React.FC = () => {
     navigate('/');
   };
 
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching personal images:', error);
+      }
+    };
+    getUserInfo();
+  }, []);
+
   return (
     <>
       <Button
@@ -25,9 +42,17 @@ const UserDropdown: React.FC = () => {
         onClick={(e) => setAnchorEl(e.currentTarget)}
       >
         <Typography fontWeight="bold" color="black" variant="body2">
-          {userName}
+          {user?.username}
         </Typography>
-        <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
+        {user?.avatarUrl ?
+         <img
+           style={{ width: '40px', height: '40px', marginLeft: 5, borderRadius: 50 }}
+           src={user.avatarUrl}
+           alt="Current Avatar"
+         />
+          :
+          <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
+        }
       </Button>
 
       <Menu

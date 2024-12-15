@@ -10,7 +10,16 @@ import useBreakpoints from '../../../hooks/useBreakpoints';
 const HomeScreen: React.FC = () => {
   const { isMediumScreen, isVerySmallScreen } = useBreakpoints();
   const authToken = localStorage.getItem('token') || ''; 
-  const { visibleImages, likeStatuses, dateFilter, likedFilter,isMobileDrawerOpen, updateDateFilter, updateLikeFilter, setIsMobileDrawerOpen } = useImageLoader(
+  const { 
+    visibleImages, 
+    likeStatuses, 
+    dateFilter, 
+    likedFilter,
+    isMobileDrawerOpen, 
+    updateDateFilter, 
+    updateLikeFilter, 
+    setIsMobileDrawerOpen 
+  } = useImageLoader(
     `${process.env.REACT_APP_BACKEND_URL}/images`,
     authToken
   );
@@ -34,17 +43,20 @@ const HomeScreen: React.FC = () => {
               width: '100%',
               bottom: 0,
               zIndex: 1000,
+              border: 0
             }}
           >
-            <Button variant="contained" style={{ fontSize: 24 }} color="primary" onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
+            <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
           </Box>
           }
-        <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
-          <UserDropdown />
-          {visibleImages.map((image: Image) => (
-            <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-          ))}
-        </Box>
+          {!isMobileDrawerOpen && 
+            <Box component="main" sx={{ flexGrow: 1, paddingTop: 6, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5 }}>
+              <UserDropdown />
+              {visibleImages.map((image: Image) => (
+                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+              ))}
+            </Box>
+          }
       </Box>
     </Box>
   );

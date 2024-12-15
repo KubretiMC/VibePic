@@ -7,4 +7,5 @@ export interface Image {
     groupId?: string;
     likes: number;
     uploaderName: string;
+    uploaderAvatar?: string;
 }

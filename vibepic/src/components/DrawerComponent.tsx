@@ -74,7 +74,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
       }}
     >
       <Box p={2} role="presentation">
-      <Button
+        <Button
           onClick={() => navigate(`/home`)}
           sx={{
               paddingLeft: 2,
@@ -107,6 +107,20 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
           isMobileDrawerOpen={isMobileDrawerOpen}
           selectedProp={likedFilter && 'Most liked images'} 
         />
+        {isMobileDrawerOpen &&
+          <Button
+            onClick={() => setIsMobileDrawerOpen(false)}
+            sx={{
+                paddingLeft: 2,
+                textTransform: 'none',
+                display: 'block',
+            }}
+          >
+            <Typography style={{fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white'}}>
+                Close
+            </Typography>
+          </Button>
+        }
       </Box>
     </Drawer>
   );
