@@ -5,9 +5,11 @@ import axios from 'axios';
 
 interface RegisterFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
+    setIsLoading: (isLoading: boolean) => void;
+    setNotificaitonText: (notificationText: string) => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsLoading, setNotificaitonText }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,15 +23,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen }) => {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, {
+      setIsLoading(true);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, {
         username,
         email,
         password,
-      });
-
-      if (response.data) {
+      }).then(() => {
+        setNotificaitonText('Successfully registered!')
         setIsLoginModalOpen(true);
-      }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setErrorMessage(error.response.data.message || 'Registration failed');

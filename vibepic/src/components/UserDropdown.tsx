@@ -4,13 +4,14 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { User } from '../models/User';
+import LoadingComponent from './LoadingComponent';
 
 const UserDropdown: React.FC = () => {
   const navigate = useNavigate();
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User>();
   const authToken = localStorage.getItem('token') || ''; 
-  const userName = 'mariqn';
 
   const handleProfileClick = () => {
     navigate('/profile');
@@ -28,6 +29,7 @@ const UserDropdown: React.FC = () => {
           headers: { Authorization: `Bearer ${authToken}` }
         });
         setUser(response.data);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching personal images:', error);
       }
@@ -41,6 +43,10 @@ const UserDropdown: React.FC = () => {
         sx={{ position: 'absolute', top: 16, right: 16, display: 'flex' }}
         onClick={(e) => setAnchorEl(e.currentTarget)}
       >
+      {loading ? 
+          <LoadingComponent />
+        :
+        <>
         <Typography fontWeight="bold" color="black" variant="body2">
           {user?.username}
         </Typography>
@@ -52,6 +58,8 @@ const UserDropdown: React.FC = () => {
          />
           :
           <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
+        }
+        </>
         }
       </Button>
 

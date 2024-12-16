@@ -6,9 +6,10 @@ import axios from 'axios';
 
 interface LoginFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
+    setIsLoading: (isLoading: boolean) => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading }) => {
   const navigate = useNavigate();
   
   const [username, setUsername] = useState('');
@@ -17,9 +18,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen }) => {
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
         username,
         password,
+      }).finally(() => {
+        setIsLoading(false);
       });
     
       const { token } = response.data;
