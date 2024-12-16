@@ -9,11 +9,15 @@ import RegisterForm from '../components/RegisterForm';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from '../../../models/JwtPayload';
+import LoadingComponent from '../../../components/LoadingComponent';
+import NotificationComponent from '../../../components/NotificationComponent';
 
 const StartScreen: React.FC = () => {
   const navigate = useNavigate();
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notificationText, setNotificaitonText] = useState('');
 
   const getRandomImage = () => {
     const images = [image1, image2, image3];
@@ -45,11 +49,15 @@ const StartScreen: React.FC = () => {
       <Slide direction="down" in={true} mountOnEnter unmountOnExit timeout={2000}>
         <Box>
           {isLoginModalOpen ? 
-            <LoginForm setIsLoginModalOpen={setIsLoginModalOpen} /> :
-            <RegisterForm setIsLoginModalOpen={setIsLoginModalOpen} />
+            <LoginForm setIsLoginModalOpen={setIsLoginModalOpen} setIsLoading={setIsLoading} /> :
+            <RegisterForm setIsLoginModalOpen={setIsLoginModalOpen} setIsLoading={setIsLoading} setNotificaitonText={setNotificaitonText} />
           }
         </Box>
       </Slide>
+      {isLoading && (
+        <LoadingComponent />
+      )}
+      <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
     </Box>
   );
 };

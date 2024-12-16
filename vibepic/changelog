@@ -1,3 +1,8 @@
+## [2.1.1] - 2024-12-16
+- removed some useless api calls
+- added notifications when registering and joining group
+- loading component made into different screens
+
 ## [2.1.0] - 2024-12-16
 - added close button to drawer on smaller screens
 - made to show user name and user avatar right to the uploaded image

@@ -9,13 +9,17 @@ import { Group } from '../../../models/Group';
 import { useImageLoader } from '../../../hooks/useImageLoader';
 import UserDropdown from '../../../components/UserDropdown';
 import useBreakpoints from '../../../hooks/useBreakpoints';
+import LoadingComponent from '../../../components/LoadingComponent';
+import NotificationComponent from '../../../components/NotificationComponent';
 
 const GroupScreen: React.FC = () => {
   const { isMediumScreen, isVerySmallScreen } = useBreakpoints();
   const { groupName = '' } = useParams<{ groupName: string }>();
-  const [joined, setJoined] = useState(false);
+  const [joined, setJoined] = useState(true);
   const [groupInfo, setGroupInfo] = useState<Group>();
-  const authToken = localStorage.getItem('token') || ''; 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const authToken = localStorage.getItem('token') || '';
+  const [notificationText, setNotificaitonText] = useState('');
 
   const { 
     visibleImages, 
@@ -43,7 +47,7 @@ const GroupScreen: React.FC = () => {
         },
       })
       .then(() => {
-        alert('You have successfully joined the group!');
+        setNotificaitonText('You have successfully joined the group!');
         setJoined(true);
       })
       .catch(error => {
@@ -55,101 +59,115 @@ const GroupScreen: React.FC = () => {
     if(joined) {
       getImages(dateFilter, likedFilter, groupName);
     }
-  }, [joined, dateFilter, groupName, likedFilter, getImages]);
+  }, [dateFilter, likedFilter]);
 
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
+      setIsLoading(true);
       await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/is-member`, { 
         headers: { Authorization: `Bearer ${authToken}` },
       })
         .then(response => {
           if (response.data.isMember) {
             getImages('','',groupName);
-            setJoined(true);
+          } else {
+            setJoined(false);
           }
         })
         .catch(error => {
           console.error('Error checking group membership:', error);
+        }).finally(() => {
+          // setIsLoading(false);
         });
     };  
 
     const getGroupInfo = async () => {
+      setIsLoading(true);
       await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/details`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })
         .then(response => {
+          setJoined(true);
           setGroupInfo(response.data);
         })
         .catch(error => {
           console.error('Error fetching groups:', error);
+        }).finally(() => {
+          setIsLoading(false);
         });
     };
-
+    
     getGroupInfo();
-    setJoined(false);
     setImagesData([]);
     setVisibleImages([]);
     checkGroupMembership(groupName);
-  }, [groupName, authToken, getImages, setImagesData, setVisibleImages]);
+  }, [groupName]);
 
   return (
     <Box display="flex">
-      {!isVerySmallScreen || isMobileDrawerOpen ?
-        <DrawerComponent 
-          dateFilter={dateFilter} 
-          updateDateFilter={updateDateFilter} 
-          likedFilter={likedFilter}
-          updateLikeFilter={updateLikeFilter}
-          isMobileDrawerOpen={isMobileDrawerOpen}
-          setIsMobileDrawerOpen={setIsMobileDrawerOpen} 
-        />
-        :
-        <Box 
-          sx={{ 
-            backgroundColor: '#00A2E8',
-            position: 'fixed', 
-            width: '100%',
-            bottom: 0,
-            zIndex: 1000,
-          }}
-        >
-          <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
-        </Box>
-      }
-      {!isMobileDrawerOpen &&
-        <Box component="main" sx={{ flexGrow: 1 }}>
-          {joined ? (
-            <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
-              <UserDropdown />
-              <Typography fontSize={36}>
-                {groupInfo?.name} group
-              </Typography>
-              <Typography fontSize={24}>
-                {groupInfo?.description}
-              </Typography>
-              <Typography fontSize={18}>
-                Members: {groupInfo?.memberCount}
-              </Typography>
-              {visibleImages.length > 0 ?
-                visibleImages.map((image: Image) => (
-                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-                ))
-                :
-                <Typography style={{marginTop: 180, fontSize: 28}}>No images in this group</Typography>
-              }
+      {isLoading ? (
+         <LoadingComponent />
+      ) : 
+      (
+      <>
+        {
+        !isVerySmallScreen || isMobileDrawerOpen ?
+          <DrawerComponent 
+            dateFilter={dateFilter} 
+            updateDateFilter={updateDateFilter} 
+            likedFilter={likedFilter}
+            updateLikeFilter={updateLikeFilter}
+            isMobileDrawerOpen={isMobileDrawerOpen}
+            setIsMobileDrawerOpen={setIsMobileDrawerOpen} 
+          />
+          :
+          <Box 
+            sx={{ 
+              backgroundColor: '#00A2E8',
+              position: 'fixed', 
+              width: '100%',
+              bottom: 0,
+              zIndex: 1000,
+            }}
+          >
+            <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
           </Box>
-          ) : (
-            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
-              <Typography fontSize={36}>
-                You must join this group to view its photos
-              </Typography>
-              <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
-                Join Group
-              </Button>
+        }
+        {
+        !isMobileDrawerOpen &&
+          <Box component="main" sx={{ flexGrow: 1 }}>
+            {joined ? (
+              <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
+                <UserDropdown />
+                <Typography fontSize={36}>
+                  {groupInfo?.name} group
+                </Typography>
+                <Typography fontSize={24}>
+                  {groupInfo?.description}
+                </Typography>
+                <Typography fontSize={18}>
+                  Members: {groupInfo?.memberCount}
+                </Typography>
+                {visibleImages.map((image: Image) => (
+                    <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+                  ))}
+                <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
             </Box>
-          )}
-        </Box>
-      }
+            ) : (
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
+                <Typography fontSize={36}>
+                  You must join this group to view its photos
+                </Typography>
+                <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
+                  Join Group
+                </Button>
+              </Box>
+            )}
+          </Box>
+        }
+        
+      </>
+    )}
     </Box>
   );
 };

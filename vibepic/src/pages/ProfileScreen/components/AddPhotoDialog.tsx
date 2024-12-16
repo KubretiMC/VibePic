@@ -53,11 +53,6 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   };
 
   const handleImageUpload = async () => {
-    if (!isFormValid()) {
-      alert('Please fill all fields before uploading.');
-      return;
-    }
-
     const formDataToSend = new FormData();
     formDataToSend.append('file', formData.tempImage!);
     formDataToSend.append('description', formData.imageDescription);

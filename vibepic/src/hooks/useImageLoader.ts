@@ -107,6 +107,6 @@ export const useImageLoader = (
     updateLikeFilter,
     setVisibleImages,
     setImagesData,
-    setIsMobileDrawerOpen
+    setIsMobileDrawerOpen,
   };
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Drawer, Typography } from '@mui/material';
+import { Box, Button, Drawer, IconButton, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import Category from './Category';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -69,13 +70,29 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
         '& .MuiDrawer-paper': {
           width: isMobileDrawerOpen ? '100%' : isLargeScreen ? 240 : isMediumScreen ? 200 : 160,
           boxSizing: 'border-box',
-          backgroundColor: '#00A2E8'
-        }
+          backgroundColor: '#00A2E8',
+        },
       }}
     >
+      {isMobileDrawerOpen && (
+        <IconButton
+          onClick={() => setIsMobileDrawerOpen(false)}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            color: 'white',
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 36 }} />
+        </IconButton>
+      )}
       <Box p={2} role="presentation">
         <Button
-          onClick={() => navigate(`/home`)}
+          onClick={() => {
+            setIsMobileDrawerOpen(false);
+            navigate(`/home`)
+          }}
           sx={{
               paddingLeft: 2,
               textTransform: 'none',
@@ -107,20 +124,6 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
           isMobileDrawerOpen={isMobileDrawerOpen}
           selectedProp={likedFilter && 'Most liked images'} 
         />
-        {isMobileDrawerOpen &&
-          <Button
-            onClick={() => setIsMobileDrawerOpen(false)}
-            sx={{
-                paddingLeft: 2,
-                textTransform: 'none',
-                display: 'block',
-            }}
-          >
-            <Typography style={{fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white'}}>
-                Close
-            </Typography>
-          </Button>
-        }
       </Box>
     </Drawer>
   );
