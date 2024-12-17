@@ -46,7 +46,15 @@ const HomeScreen: React.FC = () => {
               border: 0
             }}
           >
-            <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
+            <Button 
+              variant="text" 
+              sx={{ 
+                fontSize: 24, 
+                color: 'white' 
+              }} 
+              onClick={() => setIsMobileDrawerOpen(true)}>
+                Filters
+            </Button>
           </Box>
           }
           {!isMobileDrawerOpen && 

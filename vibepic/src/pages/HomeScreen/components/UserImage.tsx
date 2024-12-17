@@ -103,6 +103,22 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
       >
         <Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', marginBottom: 1 }}>
+            <Box sx={{ width: '100%', marginTop: 0.5 }}>
+            <Typography
+              sx={{
+                bgcolor: 'orange',
+                paddingX: 2,
+                paddingY: 0.5,
+                marginBottom: 1,
+                borderRadius: 2,
+                fontSize: 14,
+                color: 'white',
+                display: 'inline-block',
+              }}
+            >
+              {image.groupName}
+            </Typography>
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
               <Typography
                 fontWeight="bold"
@@ -118,33 +134,21 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
               </Typography>
 
               {image.uploaderAvatar ? (
-                <img
-                  style={{
-                    width: '30px',
-                    height: '30px',
-                    marginLeft: 8,
-                    borderRadius: '50%',
-                  }}
+               <Box
+                  component="img"
                   src={image.uploaderAvatar}
                   alt="Uploader Avatar"
+                  sx={{
+                    width: '30px',
+                    height: '30px',
+                    marginLeft: 2,
+                    borderRadius: '50%',
+                    objectFit: 'cover',  // Ensures the image fits within the circular box
+                  }}
                 />
               ) : (
                 <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, fontSize: 32 }} />
               )}
-            </Box>
-
-            <Box sx={{ width: '100%', marginTop: 0.5 }}>
-              <Typography
-                bgcolor="orange"
-                paddingX={2}
-                paddingY={0.5}
-                borderRadius={2}
-                fontSize={14}
-                color="white"
-                sx={{ display: 'inline-block' }}
-              >
-                {image.groupName}
-              </Typography>
             </Box>
           </Box>
 

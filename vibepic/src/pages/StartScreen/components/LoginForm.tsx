@@ -41,10 +41,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
 
   return (
     <Box className="modal">
-      <Typography style={{ fontSize: '22px' }}>Welcome to VibePic</Typography>
+      <Typography sx={{ fontSize: '22px' }}>Welcome to VibePic</Typography>
       
       {errorMessage && (
-          <Typography style={{ color: 'red', marginBottom: '8px' }}>
+          <Typography sx={{ color: 'red', marginBottom: '8px' }}>
             {errorMessage}
           </Typography>
       )}
@@ -57,10 +57,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
         onChange={(e) => setUsername(e.target.value)}
         slotProps={{
             input: {
-                style: { color: 'white' },
+                sx: { color: 'white' },
             },
             inputLabel: {
-                style: { color: 'white' },
+                sx: { color: 'white' },
             },
         }}
       />
@@ -73,19 +73,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
         onChange={(e) => setPassword(e.target.value)}
         slotProps={{
             input: {
-                style: { color: 'white' },
+                sx: { color: 'white' },
             },
             inputLabel: {
-                style: { color: 'white' },
+                sx: { color: 'white' },
             },
         }}
       />
-      <Button variant="contained" onClick={handleLogin} style={{ marginTop: '16px' }}>
+      <Button variant="contained" onClick={handleLogin} sx={{ marginTop: '16px' }}>
         Login
       </Button>
-      <Typography variant="body2" style={{ marginTop: '16px', color: 'white' }}>
+      <Typography variant="body2" sx={{ marginTop: '16px', color: 'white' }}>
         Don’t have an account?{' '}
-        <Link component="button" onClick={() => setIsLoginModalOpen(false)} style={{ color: 'white' }}>
+        <Link component="button" onClick={() => setIsLoginModalOpen(false)} sx={{ color: 'white' }}>
           Register
         </Link>
       </Typography>

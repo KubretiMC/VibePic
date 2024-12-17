@@ -26,7 +26,6 @@ const SelectedImageDialog: React.FC<SelectedImageDialogProps> = ({
           alt={selectedImage.description}
           sx={{
             width: '100%',
-            maxHeight: '80vh',
             objectFit: 'contain',
           }}
         />

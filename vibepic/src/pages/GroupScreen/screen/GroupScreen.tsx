@@ -130,14 +130,30 @@ const GroupScreen: React.FC = () => {
               zIndex: 1000,
             }}
           >
-            <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => setIsMobileDrawerOpen(true)}>Filters</Button>
+            <Button 
+              variant="text" 
+              sx={{ 
+                fontSize: 24, 
+                color: 'white'
+              }} 
+              onClick={() => setIsMobileDrawerOpen(true)}>
+                Filters
+            </Button>
           </Box>
         }
         {
         !isMobileDrawerOpen &&
           <Box component="main" sx={{ flexGrow: 1 }}>
             {joined ? (
-              <Box component="main" sx={{ flexGrow: 1, paddingTop: 5, paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, marginBottom: isVerySmallScreen ? 5 : 0 }}>
+              <Box 
+                component="main" 
+                sx={{ 
+                  flexGrow: 1, 
+                  paddingTop: 5, 
+                  paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, 
+                  marginBottom: isVerySmallScreen ? 5 : 0 
+                }}
+              >
                 <UserDropdown />
                 <Typography fontSize={36}>
                   {groupInfo?.name} group
@@ -158,7 +174,14 @@ const GroupScreen: React.FC = () => {
                 <Typography fontSize={36}>
                   You must join this group to view its photos
                 </Typography>
-                <Button variant="contained" style={{ color: 'red', backgroundColor: 'yellow' }} onClick={() => joinGroup(groupName)}>
+                <Button 
+                  variant="contained" 
+                  sx={{ 
+                    color: 'red',
+                    backgroundColor: 'yellow' 
+                  }} 
+                  onClick={() => joinGroup(groupName)}
+                >
                   Join Group
                 </Button>
               </Box>

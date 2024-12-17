@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -54,7 +54,14 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 20 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: 2,
+      }}
+    >
       {avatarImage ? (
         <Cropper
           style={{ maxHeight: 600, maxWidth: 400 }}
@@ -65,10 +72,15 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           zoomable={false}
         />
       ) : userAvatarUrl ? (
-        <img
-          style={{ width: '220px', height: '220px', marginTop: 10 }}
+        <Box
+          component="img"
           src={userAvatarUrl}
           alt="Current Avatar"
+          sx={{
+            width: '220px',
+            height: '220px',
+            objectFit: 'cover',
+          }}
         />
       ) : (
         <AccountCircleIcon sx={{ color: 'red', fontSize: 280 }} />
@@ -91,7 +103,7 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           <input type="file" accept="image/*" hidden onChange={onAvatarChange} />
         </Button>
       )}
-    </div>
+    </Box>
   );
 };
 

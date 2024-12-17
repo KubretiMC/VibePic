@@ -46,10 +46,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
 
   return (
     <Box className="modal">
-        <Typography style={{fontSize: '22px'}}>Registration</Typography>
+        <Typography sx={{fontSize: '22px'}}>Registration</Typography>
         
         {errorMessage && (
-          <Typography style={{ color: 'red', marginBottom: '8px' }}>
+          <Typography sx={{ color: 'red', marginBottom: '8px' }}>
             {errorMessage}
           </Typography>
         )}
@@ -62,8 +62,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             slotProps={{
-                input: { style: { color: 'white' } },
-                inputLabel: { style: { color: 'white' } },
+                input: { sx: { color: 'white' } },
+                inputLabel: { sx: { color: 'white' } },
             }}
         />
         <TextField
@@ -75,8 +75,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             slotProps={{
-                input: { style: { color: 'white' } },
-                inputLabel: { style: { color: 'white' } },
+                input: { sx: { color: 'white' } },
+                inputLabel: { sx: { color: 'white' } },
             }}
         />
         <TextField
@@ -88,8 +88,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             slotProps={{
-                input: { style: { color: 'white' } },
-                inputLabel: { style: { color: 'white' } },
+                input: { sx: { color: 'white' } },
+                inputLabel: { sx: { color: 'white' } },
             }}
         />
         <TextField
@@ -101,18 +101,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
             slotProps={{
-                input: { style: { color: 'white' } },
-                inputLabel: { style: { color: 'white' } },
+                input: { sx: { color: 'white' } },
+                inputLabel: { sx: { color: 'white' } },
             }}
         />
 
-        <Button variant="contained" onClick={handleRegister} style={{ marginTop: '16px' }}>
+        <Button variant="contained" onClick={handleRegister} sx={{ marginTop: '16px' }}>
             Register
         </Button>
         
-        <Typography variant="body2" style={{ marginTop: '16px', color: 'white' }}>
+        <Typography variant="body2" sx={{ marginTop: '16px', color: 'white' }}>
             Already have an account?{' '}
-            <Link component="button" onClick={() => setIsLoginModalOpen(true)} style={{ color: 'white' }}>
+            <Link component="button" onClick={() => setIsLoginModalOpen(true)} sx={{ color: 'white' }}>
                 Login
             </Link>
         </Typography>
