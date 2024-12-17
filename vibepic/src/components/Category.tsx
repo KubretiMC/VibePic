@@ -17,17 +17,39 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, i
   
   return (
     <Accordion elevation={0} sx={{backgroundColor: '#00A2E8'}} defaultExpanded={!!selectedProp}>
-        <AccordionSummary className='acccordion-summary' expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
             <Typography sx={{ fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16 }} color='white'>{categoryName}</Typography>
         </AccordionSummary>
-        <AccordionDetails sx={{ paddingTop: 0 }} className='accordion-details'>
+        <AccordionDetails sx={{ paddingTop: 0 }}>
         {items.map((category, key) => (
-            <Button key={key} sx={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 0 }}  onClick={() => onItemClick && onItemClick(category)}>
-                <Typography sx={{ fontSize: isMobileDrawerOpen ? 32 : 18, textAlign: 'left', width: '100%', color: 'white', textTransform: 'none', }}>
+            <Button 
+                key={key} 
+                sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    paddingLeft: 0 
+                }}  
+                onClick={() => onItemClick && onItemClick(category)}
+            >
+                <Typography 
+                    sx={{ 
+                        fontSize: isMobileDrawerOpen ? 32 : 18, 
+                        textAlign: 'left', 
+                        width: '100%', 
+                        color: 'white', 
+                        textTransform: 'none'
+                    }}
+                >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                 </Typography>
                 {category.toLowerCase() === selectedProp?.toLowerCase() &&
-                    <IconButton  sx={{ textAlign: 'left', width: 'auto', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                    <IconButton 
+                        sx={{ 
+                            textAlign: 'left', 
+                            width: 'auto', 
+                            backgroundColor: 'transparent', boxShadow: 'none'
+                        }}
+                    >
                         <CloseOutlinedIcon sx={{ color: 'white', fontSize: isMobileDrawerOpen ? 32 : 18 }} />
                     </IconButton >
                 }

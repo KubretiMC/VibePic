@@ -143,7 +143,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
                     height: '30px',
                     marginLeft: 2,
                     borderRadius: '50%',
-                    objectFit: 'cover',  // Ensures the image fits within the circular box
+                    objectFit: 'cover',
                   }}
                 />
               ) : (
@@ -168,7 +168,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
           {liked ? (
             <Button
               onClick={unlikeImage}
-              sx={{  padding: 0, minWidth: 'auto' }}
+              sx={{ padding: 0, minWidth: 'auto' }}
             >
               <FavoriteIcon sx={{ color: 'red', fontSize: '20px', display: 'block', paddingLeft: 1 }} />
             </Button>

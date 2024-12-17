@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
-import '../screen/StartScreen.css';
 import axios from 'axios';
 
 interface RegisterFormProps {
@@ -45,7 +44,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
   };
 
   return (
-    <Box className="modal">
+    <Box
+      sx={{
+        width: '90%',
+        maxWidth: '300px',
+        margin: 'auto',
+        marginTop: '15%',
+        padding: '16px',
+        backgroundColor: '#00A2E8',
+        boxShadow: '24px 24px 32px rgba(0, 0, 0, 0.3)',
+        borderRadius: '8px',
+      }}
+    >
         <Typography sx={{fontSize: '22px'}}>Registration</Typography>
         
         {errorMessage && (
