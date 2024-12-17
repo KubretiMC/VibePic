@@ -190,7 +190,7 @@ const ProfileScreen: React.FC = () => {
                   display: 'block',
               }}
             >
-              <Typography style={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
+              <Typography sx={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
                   Home
               </Typography>
             </Button>
@@ -206,7 +206,7 @@ const ProfileScreen: React.FC = () => {
             border: 0
           }}
         >
-          <Button variant="text" style={{ fontSize: 24, color: 'white' }} onClick={() => navigate(`/home`)}>Home</Button>
+          <Button variant="text" sx={{ fontSize: 24, color: 'white' }} onClick={() => navigate(`/home`)}>Home</Button>
         </Box>
       }
       <Box
@@ -219,7 +219,7 @@ const ProfileScreen: React.FC = () => {
           alignItems: 'center',
         }}
       >
-        <Box style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Typography variant="h4" fontWeight="bold">
             {user?.username}
           </Typography>

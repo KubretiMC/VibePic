@@ -99,7 +99,11 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
               display: 'block',
           }}
         >
-            <Typography style={{fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white'}}>
+            <Typography 
+              sx={{
+                fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, 
+                color: 'white'
+              }}>
                 Home
             </Typography>
         </Button>

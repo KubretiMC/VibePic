@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Typography, Menu, MenuItem } from '@mui/material';
+import { Button, Typography, Menu, MenuItem, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -51,11 +51,18 @@ const UserDropdown: React.FC = () => {
           {user?.username}
         </Typography>
         {user?.avatarUrl ?
-         <img
-           style={{ width: '40px', height: '40px', marginLeft: 5, borderRadius: 50 }}
-           src={user.avatarUrl}
-           alt="Current Avatar"
-         />
+         <Box
+            component="img"
+            src={user.avatarUrl}
+            alt="Current Avatar"
+            sx={{
+              width: '40px',
+              height: '40px',
+              marginLeft: 1,
+              borderRadius: '50%',
+              objectFit: 'cover',
+            }}
+          />
           :
           <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
         }

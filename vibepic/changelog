@@ -1,3 +1,8 @@
+## [2.2.0] - 2024-12-18
+- image responsivenss fixed
+- style made into sx into different places
+- classname mde into sx into different places
+
 ## [2.1.1] - 2024-12-16
 - removed some useless api calls
 - added notifications when registering and joining group

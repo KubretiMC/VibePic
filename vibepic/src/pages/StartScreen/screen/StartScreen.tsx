@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Slide } from '@mui/material';
-import './StartScreen.css';
 import image1 from '../../../images/image-1.png';
 import image2 from '../../../images/image-2.png';
 import image3 from '../../../images/image-3.png';
@@ -45,7 +44,20 @@ const StartScreen: React.FC = () => {
   }, [navigate ])
 
   return (
-    <Box className="container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <Box 
+      sx={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+      }}
+    >
       <Slide direction="down" in={true} mountOnEnter unmountOnExit timeout={2000}>
         <Box>
           {isLoginModalOpen ? 
