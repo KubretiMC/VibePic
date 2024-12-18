@@ -11,9 +11,11 @@ import UserDropdown from '../../../components/UserDropdown';
 import useBreakpoints from '../../../hooks/useBreakpoints';
 import LoadingComponent from '../../../components/LoadingComponent';
 import NotificationComponent from '../../../components/NotificationComponent';
+import { useTranslation } from 'react-i18next';
 
 const GroupScreen: React.FC = () => {
-  const { isMediumScreen, isVerySmallScreen } = useBreakpoints();
+  const { t, i18n } = useTranslation();
+  const { isMediumScreen, isSmallScreen } = useBreakpoints();
   const { groupName = '' } = useParams<{ groupName: string }>();
   const [joined, setJoined] = useState(true);
   const [groupInfo, setGroupInfo] = useState<Group>();
@@ -38,6 +40,22 @@ const GroupScreen: React.FC = () => {
     authToken,
   );
 
+  const getGroupInfo = async () => {
+    setIsLoading(true);
+    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/details`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then(response => {
+        setJoined(true);
+        setGroupInfo(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      }).finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   const joinGroup = async (groupName: string) => {
     await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/join`,
       {},
@@ -47,7 +65,8 @@ const GroupScreen: React.FC = () => {
         },
       })
       .then(() => {
-        setNotificaitonText('You have successfully joined the group!');
+        setNotificaitonText(t('JOINING_GROUP_SUCCESSFULL'));
+        getGroupInfo();
         setJoined(true);
       })
       .catch(error => {
@@ -59,7 +78,7 @@ const GroupScreen: React.FC = () => {
     if(joined) {
       getImages(dateFilter, likedFilter, groupName);
     }
-  }, [dateFilter, likedFilter]);
+  }, [dateFilter, likedFilter, joined]);
 
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
@@ -70,34 +89,17 @@ const GroupScreen: React.FC = () => {
         .then(response => {
           if (response.data.isMember) {
             getImages('','',groupName);
+            getGroupInfo();
           } else {
             setJoined(false);
+            setIsLoading(false);
           }
         })
         .catch(error => {
           console.error('Error checking group membership:', error);
-        }).finally(() => {
-          // setIsLoading(false);
-        });
-    };  
-
-    const getGroupInfo = async () => {
-      setIsLoading(true);
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/details`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      })
-        .then(response => {
-          setJoined(true);
-          setGroupInfo(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching groups:', error);
-        }).finally(() => {
-          setIsLoading(false);
         });
     };
     
-    getGroupInfo();
     setImagesData([]);
     setVisibleImages([]);
     checkGroupMembership(groupName);
@@ -111,7 +113,7 @@ const GroupScreen: React.FC = () => {
       (
       <>
         {
-        !isVerySmallScreen || isMobileDrawerOpen ?
+        !isSmallScreen || isMobileDrawerOpen ?
           <DrawerComponent 
             dateFilter={dateFilter} 
             updateDateFilter={updateDateFilter} 
@@ -150,19 +152,25 @@ const GroupScreen: React.FC = () => {
                 sx={{ 
                   flexGrow: 1, 
                   paddingTop: 5, 
-                  paddingLeft: isVerySmallScreen ? 1 : isMediumScreen ? 0 : 5, 
-                  marginBottom: isVerySmallScreen ? 5 : 0 
+                  paddingLeft: isSmallScreen ? 1 : isMediumScreen ? 0 : 5, 
+                  marginBottom: isSmallScreen ? 5 : 0 
                 }}
               >
                 <UserDropdown />
-                <Typography fontSize={36}>
-                  {groupInfo?.name} group
-                </Typography>
+                {groupInfo &&
+                  <Typography fontSize={36}>
+                    {i18n.language === 'en' ? 
+                      `${groupInfo.name.charAt(0).toUpperCase()}${groupInfo.name.slice(1).toLowerCase()} group`
+                      :
+                      `Група за ${t(groupInfo?.name).toLowerCase()}`
+                    }
+                  </Typography>
+                }
                 <Typography fontSize={24}>
                   {groupInfo?.description}
                 </Typography>
                 <Typography fontSize={18}>
-                  Members: {groupInfo?.memberCount}
+                  {t('MEMBERS')}: {groupInfo?.memberCount}
                 </Typography>
                 {visibleImages.map((image: Image) => (
                     <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
@@ -171,8 +179,8 @@ const GroupScreen: React.FC = () => {
             </Box>
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">
-                <Typography fontSize={36}>
-                  You must join this group to view its photos
+                <Typography fontSize={36} paddingX={8}>
+                  {t('JOIN_GROUP_INFO')}
                 </Typography>
                 <Button 
                   variant="contained" 
@@ -182,7 +190,7 @@ const GroupScreen: React.FC = () => {
                   }} 
                   onClick={() => joinGroup(groupName)}
                 >
-                  Join Group
+                  {t('JOIN_GROUP')}
                 </Button>
               </Box>
             )}

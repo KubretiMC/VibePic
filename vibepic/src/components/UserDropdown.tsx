@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { User } from '../models/User';
 import LoadingComponent from './LoadingComponent';
+import { useTranslation } from 'react-i18next';
 
 const UserDropdown: React.FC = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [loading, setIsLoading] = useState<boolean>(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User>();
@@ -25,11 +27,17 @@ const UserDropdown: React.FC = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
+        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
           headers: { Authorization: `Bearer ${authToken}` }
+        }).then((response) => {
+          setUser(response.data);
+          const language = response.data.language;
+          if(language) {
+            i18n.changeLanguage(language);
+          }
+        }).finally(() => {
+          setIsLoading(false);
         });
-        setUser(response.data);
-        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching personal images:', error);
       }
@@ -39,13 +47,13 @@ const UserDropdown: React.FC = () => {
 
   return (
     <>
+      {loading ? 
+        <LoadingComponent />
+      :
       <Button
         sx={{ position: 'absolute', top: 16, right: 16, display: 'flex' }}
         onClick={(e) => setAnchorEl(e.currentTarget)}
       >
-      {loading ? 
-          <LoadingComponent />
-        :
         <>
         <Typography fontWeight="bold" color="black" variant="body2">
           {user?.username}
@@ -67,8 +75,8 @@ const UserDropdown: React.FC = () => {
           <AccountCircleIcon sx={{ color: 'red', marginLeft: 1, marginRight: 2 }} />
         }
         </>
-        }
       </Button>
+      }
 
       <Menu
         anchorEl={anchorEl}
@@ -83,8 +91,8 @@ const UserDropdown: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
-        <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+        <MenuItem onClick={handleProfileClick}>{t('PROFILE')}</MenuItem>
+        <MenuItem onClick={handleLogoutClick}>{t('LOGOUT')}</MenuItem>
       </Menu>
     </>
   );

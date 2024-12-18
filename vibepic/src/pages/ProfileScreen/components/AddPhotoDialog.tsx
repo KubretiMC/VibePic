@@ -13,6 +13,7 @@ import {
 import { Group } from '../../../models/Group';
 import ActionButtons from '../components/ActionButtons';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface AddPhotoDialogProps {
   open: boolean;
@@ -35,6 +36,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   setFormData,
   authToken
 }) => {
+  const { t } = useTranslation();
   const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -82,7 +84,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   return (
     <Dialog open={open} onClose={resetFields}>
       <DialogContent>
-        <Typography variant="h6">Upload Image</Typography>
+        <Typography variant="h6" textAlign={'center'}>{t('UPLOAD_IMAGE')}</Typography>
 
         {formData.tempImageUrl && (
           <Box
@@ -99,7 +101,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
         )}
 
         <TextField
-          label="Description"
+          label={t('DESCRIPTION')}
           fullWidth
           multiline
           rows={4}
@@ -113,29 +115,29 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
           error={formData.imageDescription.length > 60}
           helperText={
             formData.imageDescription.length > 60
-              ? 'Description must be 60 characters or less.'
+              ? t('DESCRIPTION_ERROR')
               : `${formData.imageDescription.length}/60`
           }
           sx={{ marginBottom: 2 }}
         />
 
         <FormControl fullWidth sx={{ marginBottom: 2 }}>
-          <InputLabel>Group</InputLabel>
+          <InputLabel>{t('GROUP')}</InputLabel>
           <Select
             value={formData.selectedGroup}
             onChange={(e) => handleInputChange('selectedGroup', e.target.value)}
           >
             {groupInfo.map((group) => (
               <MenuItem key={group.id} value={group.id}>
-                {group.name}
+                {t(group.name)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <ActionButtons
-          addButtonName="Upload"
-          cancelButtonName="Cancel"
+          addButtonName={t('UPLOAD')}
+          cancelButtonName={t('CANCEL')}
           onAddButtonClick={handleImageUpload}
           onCancelButtonClick={resetFields}
           disabled={!isFormValid()}
