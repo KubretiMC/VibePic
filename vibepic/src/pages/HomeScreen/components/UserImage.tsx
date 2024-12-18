@@ -5,6 +5,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { Image } from '../../../models/Image';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface UserImageProps {
   image: Image;
@@ -13,6 +14,7 @@ interface UserImageProps {
 }
 
 const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authToken }) => {
+  const { t, i18n } = useTranslation();
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
 
@@ -55,6 +57,13 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
       console.error('Error unliking the image:', error);
     }
   };
+  
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(image.createdAt));
 
   return (
     <Grid2 container spacing={2}>
@@ -104,20 +113,22 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
         <Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', marginBottom: 1 }}>
             <Box sx={{ width: '100%', marginTop: 0.5 }}>
-            <Typography
-              sx={{
-                bgcolor: 'orange',
-                paddingX: 2,
-                paddingY: 0.5,
-                marginBottom: 1,
-                borderRadius: 2,
-                fontSize: 14,
-                color: 'white',
-                display: 'inline-block',
-              }}
-            >
-              {image.groupName}
-            </Typography>
+              {image.groupName &&
+                <Typography
+                  sx={{
+                    bgcolor: 'orange',
+                    paddingX: 2,
+                    paddingY: 0.5,
+                    marginBottom: 1,
+                    borderRadius: 2,
+                    fontSize: 14,
+                    color: 'white',
+                    display: 'inline-block',
+                  }}
+                >
+                  {t(image.groupName)}
+                </Typography>
+              }
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
               <Typography
@@ -157,13 +168,13 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
           </Typography>
 
           <Typography fontSize={12} variant="body2">
-            {new Date(image.createdAt).toDateString()}
+            {formattedDate}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
           <Typography variant="caption" fontWeight="bold" fontSize={16}>
-            Likes: {likes}
+            {t('LIKES')} {likes}
           </Typography>
           {liked ? (
             <Button

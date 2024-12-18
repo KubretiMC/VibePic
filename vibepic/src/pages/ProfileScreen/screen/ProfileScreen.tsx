@@ -18,10 +18,13 @@ import AddPhotoDialog from '../components/AddPhotoDialog';
 import SelectedImageDialog from '../components/SelectedImageDialog';
 import useBreakpoints from '../../../hooks/useBreakpoints';
 import LoadingComponent from '../../../components/LoadingComponent';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../../components/LanguageSwitcher';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { isLargeScreen, isMediumScreen, isVerySmallScreen } = useBreakpoints();
+  const { t, i18n } = useTranslation();
+  const { isLargeScreen, isMediumScreen, isSmallScreen } = useBreakpoints();
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<Image[]>([]);
   const [user, setUser] = useState<User>();
@@ -62,12 +65,17 @@ const ProfileScreen: React.FC = () => {
     const getUserInfo = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
+        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
           headers: { Authorization: `Bearer ${authToken}` }
+        }).then((response) =>{
+          setUser(response.data);
+          const language = response.data.language;
+          if(language) {
+            i18n.changeLanguage(language);
+          }
         }).finally(() => {
           setIsLoading(false);
         });
-        setUser(response.data);
       } catch (error) {
         console.error('Error fetching personal images:', error);
       }
@@ -168,7 +176,7 @@ const ProfileScreen: React.FC = () => {
   
   return (
     <Box display="flex">
-      {!isVerySmallScreen ?
+      {!isSmallScreen ?
         <Drawer
             variant="permanent"
             sx={{
@@ -191,7 +199,7 @@ const ProfileScreen: React.FC = () => {
               }}
             >
               <Typography sx={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
-                  Home
+                  {t('HOME')}
               </Typography>
             </Button>
         </Drawer>
@@ -206,7 +214,7 @@ const ProfileScreen: React.FC = () => {
             border: 0
           }}
         >
-          <Button variant="text" sx={{ fontSize: 24, color: 'white' }} onClick={() => navigate(`/home`)}>Home</Button>
+          <Button variant="text" sx={{ fontSize: 24, color: 'white' }} onClick={() => navigate(`/home`)}>{t('HOME')}</Button>
         </Box>
       }
       <Box
@@ -242,12 +250,12 @@ const ProfileScreen: React.FC = () => {
             textColor="primary"
             indicatorColor="primary"
           >
-            <Tab label="Your Images" />
-            <Tab label="Liked Images" />
+            <Tab label={t('YOUR_IMAGES')} />
+            <Tab label={t('YOUR_LIKES')} />
           </Tabs>
         </Box>
 
-        <Box sx={{ marginTop: 4,  marginBottom: isVerySmallScreen ? 10 : 2, width: '80%' }}>
+        <Box sx={{ marginTop: 4,  marginBottom: isSmallScreen ? 10 : 2, width: '80%' }}>
           <Grid2 container spacing={2} justifyContent={images.length === 0 ? "center" : "flex-start"}>
           {isLoading ? (
             <LoadingComponent />
@@ -279,7 +287,7 @@ const ProfileScreen: React.FC = () => {
                       }}
                     >
                       <Typography variant="h4" sx={{ color: '#000', fontWeight: 'bold', fontSize: '2rem' }}>
-                        + Add Photo
+                        + {t('ADD_PHOTO')}
                       </Typography>
                     </Box>
                     <input
@@ -322,7 +330,7 @@ const ProfileScreen: React.FC = () => {
 
         <SelectedImageDialog
           selectedImage={selectedImage}
-          deleteButtonText={activeTab === 0 ? "Delete" : "Unlike"}
+          deleteButtonText={activeTab === 0 ? t('DELETE') : t('UNLIKE')}
           onClose={() => setSelectedImage(null)}
           onDelete={activeTab === 0 ? handleDeleteImage : unlikeImage}
         />
@@ -338,6 +346,7 @@ const ProfileScreen: React.FC = () => {
           authToken={authToken}
         />
       </Box>
+      <LanguageSwitcher authToken={authToken} />
     </Box>
   );
 };

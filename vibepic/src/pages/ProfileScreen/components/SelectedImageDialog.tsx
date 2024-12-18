@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, Box, Typography, Button } from '@mui/material';
 import { Image } from '../../../models/Image';
+import { useTranslation } from 'react-i18next';
 
 interface SelectedImageDialogProps {
   selectedImage: Image | null;
@@ -15,6 +16,7 @@ const SelectedImageDialog: React.FC<SelectedImageDialogProps> = ({
   onClose,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   if (!selectedImage) return null;
 
   return (
@@ -33,10 +35,10 @@ const SelectedImageDialog: React.FC<SelectedImageDialogProps> = ({
           {selectedImage.description}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          Uploaded on: {new Date(selectedImage.createdAt).toLocaleDateString()}
+          {t('UPLOADED_ON')}: {new Date(selectedImage.createdAt).toLocaleDateString()}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          Likes: {selectedImage.likes}
+          {t('LIKES')}: {selectedImage.likes}
         </Typography>
         <Button
           variant="outlined"

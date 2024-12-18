@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface RegisterFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -9,6 +10,7 @@ interface RegisterFormProps {
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsLoading, setNotificaitonText }) => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +19,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
 
   const handleRegister = async () => {
     if (password !== passwordConfirm) {
-      setErrorMessage('Passwords do not match');
+      setErrorMessage(t('PASSWORD_NOT_MATCH'));
       return;
     }
 
@@ -28,7 +30,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         email,
         password,
       }).then(() => {
-        setNotificaitonText('Successfully registered!')
+        setNotificaitonText(t('SUCCESSFULLY_REGISTERED'))
         setIsLoginModalOpen(true);
       })
       .finally(() => {
@@ -36,9 +38,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
       });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message || 'Registration failed');
+        setErrorMessage(error.response.data.message || t('REGISTRATION_FAILED'));
       } else {
-        setErrorMessage('An error occurred');
+        setErrorMessage(t('ERROR_OCCURED'));
       }
     }
   };
@@ -56,7 +58,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         borderRadius: '8px',
       }}
     >
-        <Typography sx={{fontSize: '22px'}}>Registration</Typography>
+        <Typography sx={{fontSize: '22px'}}>{t('REGISTRATION')}</Typography>
         
         {errorMessage && (
           <Typography sx={{ color: 'red', marginBottom: '8px' }}>
@@ -65,7 +67,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         )}
 
         <TextField
-            label="Username"
+            label={t('USERNAME')}
             variant="outlined"
             fullWidth
             margin="normal"
@@ -77,7 +79,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             }}
         />
         <TextField
-            label="Email"
+            label={t('EMAIL')}
             type='email'
             variant="outlined"
             fullWidth
@@ -90,7 +92,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             }}
         />
         <TextField
-            label="Password"
+            label={t('PASSWORD')}
             type="password"
             variant="outlined"
             fullWidth
@@ -103,7 +105,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
             }}
         />
         <TextField
-            label="Confirm Password"
+            label={t('PASSWORD_CONFIRM')}
             type="password"
             variant="outlined"
             fullWidth
@@ -117,13 +119,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         />
 
         <Button variant="contained" onClick={handleRegister} sx={{ marginTop: '16px' }}>
-            Register
+            {t('REGISTER')}
         </Button>
         
         <Typography variant="body2" sx={{ marginTop: '16px', color: 'white' }}>
-            Already have an account?{' '}
+            {t('ALREADY_HAVE_ACCOUNT')}{' '}
             <Link component="button" onClick={() => setIsLoginModalOpen(true)} sx={{ color: 'white' }}>
-                Login
+                {t('LOGIN')}
             </Link>
         </Typography>
     </Box>

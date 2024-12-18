@@ -5,6 +5,7 @@ import 'cropperjs/dist/cropper.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ActionButtons from '../components/ActionButtons';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface AvatarUploaderProps {
   userAvatarUrl?: string;
@@ -14,6 +15,7 @@ interface AvatarUploaderProps {
 }
 
 const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatarUpdate, setIsLoading, authToken }) => {
+  const { t } = useTranslation();
   const cropperRef = useRef<ReactCropperElement>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
 
@@ -88,8 +90,8 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
 
       {avatarImage ? (
         <ActionButtons
-          addButtonName="Save Image"
-          cancelButtonName="Cancel"
+          addButtonName={t('SAVE_IMAGE')}
+          cancelButtonName={t('CANCEL')}
           onAddButtonClick={uploadCroppedImage}
           onCancelButtonClick={() => setAvatarImage(null)}
         />
@@ -99,7 +101,7 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           sx={{ textTransform: 'none', fontSize: 18 }}
           component="label"
         >
-          Change Image
+          {t('CHANGE_IMAGE')}
           <input type="file" accept="image/*" hidden onChange={onAvatarChange} />
         </Button>
       )}

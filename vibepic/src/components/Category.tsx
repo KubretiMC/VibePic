@@ -3,6 +3,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typo
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import useBreakpoints from '../hooks/useBreakpoints';
+import { useTranslation } from 'react-i18next';
 
 interface CategoryProps {
     categoryName: string;
@@ -13,6 +14,7 @@ interface CategoryProps {
 }
 
 const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, isMobileDrawerOpen, selectedProp }) => {
+  const { t } = useTranslation();
   const { isLargeScreen, isMediumScreen } = useBreakpoints();
   
   return (
@@ -40,7 +42,7 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, i
                         textTransform: 'none'
                     }}
                 >
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                    {t(category.charAt(0).toUpperCase() + category.slice(1))}
                 </Typography>
                 {category.toLowerCase() === selectedProp?.toLowerCase() &&
                     <IconButton 

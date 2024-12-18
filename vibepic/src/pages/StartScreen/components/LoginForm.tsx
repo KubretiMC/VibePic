@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface LoginFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -10,6 +11,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,9 +33,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
       navigate('/home');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message || 'Registration failed');
+        setErrorMessage(error.response.data.message || t('REGISTRATION_FAILED'));
       } else {
-        setErrorMessage('An error occurred');
+        setErrorMessage(t('ERROR_OCCURED'));
       }
     }
   };
@@ -51,7 +53,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
         borderRadius: '8px',
       }}
     >
-      <Typography sx={{ fontSize: '22px' }}>Welcome to VibePic</Typography>
+      <Typography sx={{ fontSize: '22px' }}>{t('WELCOME_TO')} VibePic</Typography>
       
       {errorMessage && (
           <Typography sx={{ color: 'red', marginBottom: '8px' }}>
@@ -60,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
       )}
       
       <TextField
-        label="Username"
+        label={t('USERNAME')}
         fullWidth
         margin="normal"
         value={username}
@@ -75,7 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
         }}
       />
       <TextField
-        label="Password"
+        label={t('PASSWORD')}
         type="password"
         fullWidth
         margin="normal"
@@ -91,12 +93,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
         }}
       />
       <Button variant="contained" onClick={handleLogin} sx={{ marginTop: '16px' }}>
-        Login
+        {t('LOGIN')}
       </Button>
       <Typography variant="body2" sx={{ marginTop: '16px', color: 'white' }}>
-        Don’t have an account?{' '}
+        {t('DONT_HAVE_ACCOUNT')}{' '}
         <Link component="button" onClick={() => setIsLoginModalOpen(false)} sx={{ color: 'white' }}>
-          Register
+          {t('REGISTER')}
         </Link>
       </Typography>
     </Box>
