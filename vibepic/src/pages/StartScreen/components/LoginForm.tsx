@@ -33,9 +33,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
       navigate('/home');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message || t('REGISTRATION_FAILED'));
+        setErrorMessage(error.response.data.message || 'REGISTRATION_FAILED');
       } else {
-        setErrorMessage(t('ERROR_OCCURED'));
+        setErrorMessage('ERROR_OCCURED');
       }
     }
   };
@@ -57,7 +57,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
       
       {errorMessage && (
           <Typography sx={{ color: 'red', marginBottom: '8px' }}>
-            {errorMessage}
+            {t(errorMessage)}
           </Typography>
       )}
       

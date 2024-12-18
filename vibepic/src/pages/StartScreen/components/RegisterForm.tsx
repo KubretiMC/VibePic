@@ -18,8 +18,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleRegister = async () => {
+    if(username.length < 3) {
+      setErrorMessage('USERNAME_TOO_SHORT');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMessage('INVALID_EMAIL');
+      return;
+    }
+
+    if(password.length < 6) {
+      setErrorMessage('PASSWORD_TOO_SHORT');
+      return;
+    }
+
     if (password !== passwordConfirm) {
-      setErrorMessage(t('PASSWORD_NOT_MATCH'));
+      setErrorMessage('PASSWORD_NOT_MATCH');
       return;
     }
 
@@ -30,7 +45,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         email,
         password,
       }).then(() => {
-        setNotificaitonText(t('SUCCESSFULLY_REGISTERED'))
+        setNotificaitonText('SUCCESSFULLY_REGISTERED')
         setIsLoginModalOpen(true);
       })
       .finally(() => {
@@ -38,9 +53,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
       });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message || t('REGISTRATION_FAILED'));
+        setErrorMessage(error.response.data.message || 'REGISTRATION_FAILED');
       } else {
-        setErrorMessage(t('ERROR_OCCURED'));
+        setErrorMessage('ERROR_OCCURED');
       }
     }
   };
@@ -62,7 +77,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
         
         {errorMessage && (
           <Typography sx={{ color: 'red', marginBottom: '8px' }}>
-            {errorMessage}
+            {t(errorMessage)}
           </Typography>
         )}
 
