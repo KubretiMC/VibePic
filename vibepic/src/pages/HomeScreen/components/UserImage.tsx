@@ -75,6 +75,7 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
+        marginBottom: 10
       }}
     >
       <Box

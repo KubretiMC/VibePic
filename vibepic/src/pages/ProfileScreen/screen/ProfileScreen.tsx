@@ -227,7 +227,7 @@ const ProfileScreen: React.FC = () => {
           alignItems: 'center',
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 10 }}>
           <Typography variant="h4" fontWeight="bold">
             {user?.username}
           </Typography>
