@@ -62,9 +62,11 @@ const HomeScreen: React.FC = () => {
           {!isMobileDrawerOpen && 
             <Box component="main" sx={{ flexGrow: 1, paddingTop: 6, paddingLeft: isSmallScreen ? 1 : isMediumScreen ? 0 : 5 }}>
               <UserDropdown />
-              {visibleImages.map((image: Image) => (
-                <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-              ))}
+              <Box sx={{ marginBottom: 10 }}>
+                {visibleImages.map((image: Image) => (
+                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+                ))}
+              </Box>
             </Box>
           }
       </Box>

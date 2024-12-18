@@ -172,9 +172,11 @@ const GroupScreen: React.FC = () => {
                 <Typography fontSize={18}>
                   {t('MEMBERS')}: {groupInfo?.memberCount}
                 </Typography>
-                {visibleImages.map((image: Image) => (
-                    <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-                  ))}
+                <Box sx={{ marginBottom: 10 }}>
+                  {visibleImages.map((image: Image) => (
+                      <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+                    ))}
+                </Box>
                 <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
             </Box>
             ) : (
