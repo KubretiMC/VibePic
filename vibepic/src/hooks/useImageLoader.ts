@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Image } from '../models/Image';
 import { api } from '../api/api';
+import axios from 'axios';
 
 export const useImageLoader = (
   endpoint: string
@@ -13,16 +14,21 @@ export const useImageLoader = (
   const [likedFilter, setLikedFilter] = useState('');
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const getImages = useCallback(
     async (week?: string, mostLiked?: string, groupName?: string) => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+  
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+  
       try {
-        console.log('mostLiked', mostLiked);
         const response = await api.get(endpoint, {
-          params: {
-            week: week,
-            mostLiked: mostLiked,
-            groupName: groupName,
-          },
+          params: { week, mostLiked, groupName },
+          signal: controller.signal,
         });
   
         const images = response.data;
@@ -32,10 +38,16 @@ export const useImageLoader = (
         const imageIds = images.map((img: Image) => img.id).join(',');
         const likeStatusResponse = await api.get('/likes/batch-likes-status', {
           params: { imageIds },
+          signal: controller.signal,
         });
+  
         setLikeStatuses(likeStatusResponse.data.likeStatuses);
       } catch (error) {
-        console.error('Error fetching images:', error);
+        if (axios.isCancel(error)) {
+          console.log('Request was cancelled');
+        } else {
+          console.error('Error fetching images:', error);
+        }
       }
     },
     [endpoint]
@@ -62,7 +74,7 @@ export const useImageLoader = (
 
   useEffect(() => {
     getImages(dateFilter, likedFilter);
-  }, [dateFilter, likedFilter, getImages]);
+  }, [dateFilter, likedFilter]);
 
   useEffect(() => {
     const loadMoreImages = async () => {

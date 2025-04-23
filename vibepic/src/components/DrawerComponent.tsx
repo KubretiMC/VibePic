@@ -13,14 +13,23 @@ interface DrawerComponentProps {
   updateLikeFilter: (likeFilter: string) => void;
   isMobileDrawerOpen: boolean;
   setIsMobileDrawerOpen: (isMobileDrawerOpen: boolean) => void;
+  selectedWeekFilter: string;
+  setSelectedWeekFilter: (selectedFilter: string) => void;
 }
 
-const DrawerComponent: React.FC<DrawerComponentProps> = ({ likedFilter, updateDateFilter, updateLikeFilter, isMobileDrawerOpen, setIsMobileDrawerOpen }) => {
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ 
+  likedFilter,
+  updateDateFilter, 
+  updateLikeFilter, 
+  isMobileDrawerOpen, 
+  setIsMobileDrawerOpen,
+  selectedWeekFilter,
+  setSelectedWeekFilter
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isLargeScreen, isMediumScreen } = useBreakpoints();
   const [groups, setGroups] = useState<string[]>([]);
-  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('');
   const { groupName = '' } = useParams<{ groupName: string }>();
 
   useEffect(() => {
@@ -101,7 +110,11 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ likedFilter, updateDa
           categoryName={t('TIME')} 
           items={['THIS_WEEK', 'LAST_WEEK', 'WEEK_BEFORE_LAST']} 
           onItemClick={(item) => {
-            setSelectedWeekFilter(item);
+            if(item === selectedWeekFilter) {
+              setSelectedWeekFilter('');
+            } else {
+              setSelectedWeekFilter(item);
+            }
             updateDateFilter(item)
           }}
           isMobileDrawerOpen={isMobileDrawerOpen}

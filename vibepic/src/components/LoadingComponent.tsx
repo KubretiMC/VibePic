@@ -14,7 +14,7 @@ const LoadingComponent: React.FC = () => {
         width: '100%',
         height: '100%',
         backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        zIndex: 9999,
+        zIndex: 100,
       }}
     >
       <CircularProgress />

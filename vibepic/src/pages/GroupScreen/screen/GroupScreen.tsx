@@ -21,6 +21,7 @@ const GroupScreen: React.FC = () => {
   const [groupInfo, setGroupInfo] = useState<Group>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [notificationText, setNotificaitonText] = useState('');
+  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('');
 
   const { 
     visibleImages, 
@@ -78,7 +79,7 @@ const GroupScreen: React.FC = () => {
         const response = await api.get(`/user-groups/${groupName}/is-member`);
       
         if (response.data.isMember) {
-          getImages('', '', groupName);
+          getImages('', likedFilter, groupName);
           getGroupInfo();
         } else {
           setJoined(false);
@@ -109,6 +110,8 @@ const GroupScreen: React.FC = () => {
             updateLikeFilter={updateLikeFilter}
             isMobileDrawerOpen={isMobileDrawerOpen}
             setIsMobileDrawerOpen={setIsMobileDrawerOpen} 
+            selectedWeekFilter={selectedWeekFilter}
+            setSelectedWeekFilter={setSelectedWeekFilter}
           />
           :
           <Box 
@@ -117,7 +120,7 @@ const GroupScreen: React.FC = () => {
               position: 'fixed', 
               width: '100%',
               bottom: 0,
-              zIndex: 1000,
+              zIndex: 1,
             }}
           >
             <Button 
@@ -160,11 +163,17 @@ const GroupScreen: React.FC = () => {
                 <Typography fontSize={18}>
                   {t('MEMBERS')}: {groupInfo?.memberCount}
                 </Typography>
-                <Box sx={{ marginBottom: 10 }}>
-                  {visibleImages.map((image: Image) => (
-                      <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
-                    ))}
-                </Box>
+                {visibleImages.length > 0 ?
+                  <Box sx={{ marginBottom: 10 }}>
+                    {visibleImages.map((image: Image) => (
+                        <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+                      ))}
+                  </Box>
+                  :
+                  <Box sx={{ fontSize: 32, marginTop: 20 }}>
+                    No images found
+                  </Box>
+                }
                 <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
             </Box>
             ) : (

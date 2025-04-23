@@ -7,15 +7,11 @@ interface NotificationComponentProps {
 }
 
 const NotificationComponent: React.FC<NotificationComponentProps> = ({ notificationText, setNotificationText }) => {
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        setNotificationText('');
-    };
-    
     return (
         <Snackbar
             open={notificationText !== ''}
             autoHideDuration={3000}
-            onClose={handleClose}
+            onClose={() => setNotificationText('')}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             message={notificationText}
             sx={{

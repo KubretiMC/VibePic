@@ -95,7 +95,7 @@ const ProfileScreen: React.FC = () => {
       try {
         setIsLoading(true);
         
-        const response = await api.get('/images/by-uploader');  // Automatically uses the Authorization header
+        const response = await api.get('/images/by-uploader');
       
         setImages(response.data);
       } catch (error) {
@@ -190,7 +190,7 @@ const ProfileScreen: React.FC = () => {
             position: 'fixed', 
             width: '100%',
             bottom: 0,
-            zIndex: 1000,
+            zIndex: 1,
             border: 0
           }}
         >
