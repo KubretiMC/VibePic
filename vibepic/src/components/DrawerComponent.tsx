@@ -2,43 +2,47 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Drawer, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Category from './Category';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import useBreakpoints from '../hooks/useBreakpoints';
 import { useTranslation } from 'react-i18next';
+import { api } from '../api/api';
 
 interface DrawerComponentProps {
-  dateFilter: string;
   updateDateFilter: (dateFilter: string) => void;
   likedFilter: string;
   updateLikeFilter: (likeFilter: string) => void;
   isMobileDrawerOpen: boolean;
   setIsMobileDrawerOpen: (isMobileDrawerOpen: boolean) => void;
+  selectedWeekFilter: string;
+  setSelectedWeekFilter: (selectedFilter: string) => void;
 }
 
-const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilter, updateDateFilter, updateLikeFilter, isMobileDrawerOpen, setIsMobileDrawerOpen }) => {
-  const authToken = localStorage.getItem('token'); 
+const DrawerComponent: React.FC<DrawerComponentProps> = ({ 
+  likedFilter,
+  updateDateFilter, 
+  updateLikeFilter, 
+  isMobileDrawerOpen, 
+  setIsMobileDrawerOpen,
+  selectedWeekFilter,
+  setSelectedWeekFilter
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isLargeScreen, isMediumScreen } = useBreakpoints();
   const [groups, setGroups] = useState<string[]>([]);
-  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('');
   const { groupName = '' } = useParams<{ groupName: string }>();
 
   useEffect(() => {
     const getGroupNames = async () => {
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/groups/names`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      })
-      .then(response => {
+      try {
+        const response = await api.get('/groups/names');
         setGroups(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching groups:', error);
-      });
+      }
     };
     getGroupNames();
-  }, [authToken]);
+  }, []);
 
   const handleGroupClick = (group: string) => {
     if(groupName ===  group.toLowerCase()) {
@@ -106,7 +110,11 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({ dateFilter, likedFilt
           categoryName={t('TIME')} 
           items={['THIS_WEEK', 'LAST_WEEK', 'WEEK_BEFORE_LAST']} 
           onItemClick={(item) => {
-            setSelectedWeekFilter(item);
+            if(item === selectedWeekFilter) {
+              setSelectedWeekFilter('');
+            } else {
+              setSelectedWeekFilter(item);
+            }
             updateDateFilter(item)
           }}
           isMobileDrawerOpen={isMobileDrawerOpen}

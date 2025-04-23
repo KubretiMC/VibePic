@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Image } from '../models/Image';
+import { api } from '../api/api';
+import axios from 'axios';
 
 export const useImageLoader = (
-  endpoint: string,
-  authToken: string
+  endpoint: string
 ) => {
   const [loading, setLoading] = useState(false);
   const [imagesData, setImagesData] = useState<Image[]>([]);
@@ -14,33 +14,45 @@ export const useImageLoader = (
   const [likedFilter, setLikedFilter] = useState('');
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const getImages = useCallback(
     async (week?: string, mostLiked?: string, groupName?: string) => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+  
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+  
       try {
-        const response = await axios.get(endpoint, {
-          headers: { Authorization: `Bearer ${authToken}` },
-          params: {
-            week: week || undefined,
-            mostLiked: mostLiked || undefined,
-            groupName: groupName || undefined
-          },
+        const response = await api.get(endpoint, {
+          params: { week, mostLiked, groupName },
+          signal: controller.signal,
         });
+  
         const images = response.data;
         setImagesData(images);
-        setVisibleImages(images.slice(0, 10));
+        setVisibleImages(images.slice(0, 3));
+  
         const imageIds = images.map((img: Image) => img.id).join(',');
-        const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
-          headers: { Authorization: `Bearer ${authToken}` },
+        const likeStatusResponse = await api.get('/likes/batch-likes-status', {
           params: { imageIds },
+          signal: controller.signal,
         });
+  
         setLikeStatuses(likeStatusResponse.data.likeStatuses);
       } catch (error) {
-        console.error('Error fetching images:', error);
+        if (axios.isCancel(error)) {
+          console.log('Request was cancelled');
+        } else {
+          console.error('Error fetching images:', error);
+        }
       }
     },
-    [authToken, endpoint]
+    [endpoint]
   );
-
+  
   const updateDateFilter = (newDateFilter: string) => {
     if (dateFilter === newDateFilter) {
       setDateFilter('');
@@ -62,21 +74,20 @@ export const useImageLoader = (
 
   useEffect(() => {
     getImages(dateFilter, likedFilter);
-  }, [dateFilter, likedFilter, getImages]);
+  }, [dateFilter, likedFilter]);
 
   useEffect(() => {
     const loadMoreImages = async () => {
       setLoading(true);
       let nextImages: Image[] = [];
-      if (imagesData.length - visibleImages.length >= 10) {
-        nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 10);
+      if (imagesData.length - visibleImages.length >= 3) {
+        nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 3);
       } else {
         nextImages = imagesData.slice(visibleImages.length, imagesData.length);
       }
       setVisibleImages((prev) => [...prev, ...nextImages]);
       const newImageIds = nextImages.map((img) => img.id).join(',');
-      const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const likeStatusResponse = await api.get('/likes/batch-likes-status', {
         params: { imageIds: newImageIds },
       });
       setLikeStatuses((prev) => ({
@@ -94,7 +105,7 @@ export const useImageLoader = (
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length, imagesData, authToken]);
+  }, [loading, visibleImages.length, imagesData]);
 
   return {
     visibleImages,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import UserImage from '../components/UserImage';
 import { Image } from '../../../models/Image';
@@ -11,32 +11,32 @@ import { useTranslation } from 'react-i18next';
 const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
   const { isMediumScreen, isSmallScreen } = useBreakpoints();
-  const authToken = localStorage.getItem('token') || ''; 
+  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('');
   const { 
     visibleImages, 
     likeStatuses, 
-    dateFilter, 
     likedFilter,
     isMobileDrawerOpen, 
     updateDateFilter, 
     updateLikeFilter, 
     setIsMobileDrawerOpen 
   } = useImageLoader(
-    `${process.env.REACT_APP_BACKEND_URL}/images`,
-    authToken
+    '/images'
   );
 
   return (
     <Box>
       <Box display="flex">
         {!isSmallScreen || isMobileDrawerOpen ?
-          <DrawerComponent 
-            dateFilter={dateFilter}
+          <DrawerComponent
             likedFilter={likedFilter} 
             updateDateFilter={updateDateFilter} 
             updateLikeFilter={updateLikeFilter} 
             isMobileDrawerOpen={isMobileDrawerOpen}
-            setIsMobileDrawerOpen={setIsMobileDrawerOpen} />
+            setIsMobileDrawerOpen={setIsMobileDrawerOpen}
+            selectedWeekFilter={selectedWeekFilter}
+            setSelectedWeekFilter={setSelectedWeekFilter}  
+          />
           :
           <Box 
             sx={{ 
@@ -44,7 +44,7 @@ const HomeScreen: React.FC = () => {
               position: 'fixed', 
               width: '100%',
               bottom: 0,
-              zIndex: 1000,
+              zIndex: 1,
               border: 0
             }}
           >
@@ -62,11 +62,17 @@ const HomeScreen: React.FC = () => {
           {!isMobileDrawerOpen && 
             <Box component="main" sx={{ flexGrow: 1, paddingTop: 6, paddingLeft: isSmallScreen ? 1 : isMediumScreen ? 0 : 5 }}>
               <UserDropdown />
-              <Box sx={{ marginBottom: 10 }}>
-                {visibleImages.map((image: Image) => (
-                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-                ))}
-              </Box>
+              {visibleImages.length > 0 ?
+                <Box sx={{ marginBottom: 10 }}>
+                  {visibleImages.map((image: Image) => (
+                    <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+                  ))}
+                </Box>
+                :
+                <Box sx={{ fontSize: 32, marginTop: 20 }}>
+                  No images found
+                </Box>
+              }
             </Box>
           }
       </Box>

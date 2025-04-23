@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import DrawerComponent from '../../../components/DrawerComponent';
-import axios from 'axios';
 import UserImage from '../../HomeScreen/components/UserImage';
 import { Image } from '../../../models/Image';
 import { Group } from '../../../models/Group';
@@ -12,6 +11,7 @@ import useBreakpoints from '../../../hooks/useBreakpoints';
 import LoadingComponent from '../../../components/LoadingComponent';
 import NotificationComponent from '../../../components/NotificationComponent';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../api/api';
 
 const GroupScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -20,8 +20,8 @@ const GroupScreen: React.FC = () => {
   const [joined, setJoined] = useState(true);
   const [groupInfo, setGroupInfo] = useState<Group>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const authToken = localStorage.getItem('token') || '';
   const [notificationText, setNotificaitonText] = useState('');
+  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('');
 
   const { 
     visibleImages, 
@@ -36,42 +36,34 @@ const GroupScreen: React.FC = () => {
     setImagesData,
     setIsMobileDrawerOpen
   } = useImageLoader(
-    `${process.env.REACT_APP_BACKEND_URL}/images/group`,
-    authToken,
+   '/images/group', 
   );
 
   const getGroupInfo = async () => {
     setIsLoading(true);
-    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/details`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    })
-      .then(response => {
-        setJoined(true);
-        setGroupInfo(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching groups:', error);
-      }).finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      setIsLoading(true);
+    
+      const response = await api.get(`/user-groups/${groupName}/details`);
+      setJoined(true);
+      setGroupInfo(response.data);
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const joinGroup = async (groupName: string) => {
-    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/join`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      .then(() => {
-        setNotificaitonText(t('JOINING_GROUP_SUCCESSFULL'));
-        getGroupInfo();
-        setJoined(true);
-      })
-      .catch(error => {
-        console.error('Error joining the group:', error);
-      });
+    try {
+      await api.post(`/user-groups/${groupName}/join`, {});
+    
+      setNotificaitonText(t('JOINING_GROUP_SUCCESSFULL'));
+      getGroupInfo();
+      setJoined(true);
+    } catch (error) {
+      console.error('Error joining the group:', error);
+    }
   }
 
   useEffect(() => {
@@ -83,21 +75,19 @@ const GroupScreen: React.FC = () => {
   useEffect(() => {
     const checkGroupMembership = async (groupName: string) => {
       setIsLoading(true);
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-groups/${groupName}/is-member`, { 
-        headers: { Authorization: `Bearer ${authToken}` },
-      })
-        .then(response => {
-          if (response.data.isMember) {
-            getImages('','',groupName);
-            getGroupInfo();
-          } else {
-            setJoined(false);
-            setIsLoading(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error checking group membership:', error);
-        });
+      try {
+        const response = await api.get(`/user-groups/${groupName}/is-member`);
+      
+        if (response.data.isMember) {
+          getImages('', likedFilter, groupName);
+          getGroupInfo();
+        } else {
+          setJoined(false);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking group membership:', error);
+      }
     };
     
     setImagesData([]);
@@ -115,12 +105,13 @@ const GroupScreen: React.FC = () => {
         {
         !isSmallScreen || isMobileDrawerOpen ?
           <DrawerComponent 
-            dateFilter={dateFilter} 
             updateDateFilter={updateDateFilter} 
             likedFilter={likedFilter}
             updateLikeFilter={updateLikeFilter}
             isMobileDrawerOpen={isMobileDrawerOpen}
             setIsMobileDrawerOpen={setIsMobileDrawerOpen} 
+            selectedWeekFilter={selectedWeekFilter}
+            setSelectedWeekFilter={setSelectedWeekFilter}
           />
           :
           <Box 
@@ -129,7 +120,7 @@ const GroupScreen: React.FC = () => {
               position: 'fixed', 
               width: '100%',
               bottom: 0,
-              zIndex: 1000,
+              zIndex: 1,
             }}
           >
             <Button 
@@ -172,11 +163,17 @@ const GroupScreen: React.FC = () => {
                 <Typography fontSize={18}>
                   {t('MEMBERS')}: {groupInfo?.memberCount}
                 </Typography>
-                <Box sx={{ marginBottom: 10 }}>
-                  {visibleImages.map((image: Image) => (
-                      <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
-                    ))}
-                </Box>
+                {visibleImages.length > 0 ?
+                  <Box sx={{ marginBottom: 10 }}>
+                    {visibleImages.map((image: Image) => (
+                        <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
+                      ))}
+                  </Box>
+                  :
+                  <Box sx={{ fontSize: 32, marginTop: 20 }}>
+                    No images found
+                  </Box>
+                }
                 <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
             </Box>
             ) : (

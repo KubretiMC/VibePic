@@ -8,7 +8,6 @@ import {
   Grid2, 
   Drawer
 } from '@mui/material';
-import axios from 'axios';
 import { User } from '../../../models/User';
 import { useNavigate } from 'react-router-dom';
 import { Image } from '../../../models/Image';
@@ -20,6 +19,7 @@ import useBreakpoints from '../../../hooks/useBreakpoints';
 import LoadingComponent from '../../../components/LoadingComponent';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../../components/LanguageSwitcher';
+import { api } from '../../../api/api';
 
 const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +32,6 @@ const ProfileScreen: React.FC = () => {
   const [groupInfo, setGroupInfo] = useState<Group[]>([]);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
-  const authToken = localStorage.getItem('token') || ''; 
   const [formData, setFormData] = useState({
     tempImage: null as File | null,
     tempImageUrl: '',
@@ -65,66 +64,56 @@ const ProfileScreen: React.FC = () => {
     const getUserInfo = async () => {
       try {
         setIsLoading(true);
-        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
-          headers: { Authorization: `Bearer ${authToken}` }
-        }).then((response) =>{
-          setUser(response.data);
-          const language = response.data.language;
-          if(language) {
-            i18n.changeLanguage(language);
-          }
-        }).finally(() => {
-          setIsLoading(false);
-        });
+        const response = await api.get('/users/loggedUser');
+        setUser(response.data);
+      
+        const language = response.data.language;
+        if (language) {
+          i18n.changeLanguage(language);
+        }
       } catch (error) {
         console.error('Error fetching personal images:', error);
-      }
+      } finally {
+        setIsLoading(false);
+      }      
     };
 
     const getGroupNames = async () => {
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/groups/main-info`, {
-         headers: { Authorization: `Bearer ${authToken}` }
-      })
-      .then(response => {
+      try {
+        const response = await api.get('/groups/main-info');
         setGroupInfo(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching groups:', error);
-      });
+      }
     };
     getUserInfo();
     getGroupNames();
-  }, [authToken]);
+  }, []);
 
   useEffect(() => {
     const fetchImagesByUploader = async () => {
       try {
-        setIsLoading(true)
-        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/images/by-uploader`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        })
-        .then((response) => {
-          setImages(response.data);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        setIsLoading(true);
+        
+        const response = await api.get('/images/by-uploader');
+      
+        setImages(response.data);
       } catch (error) {
         console.error('Error fetching personal images:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     const fetchLikedImages = async () => {
       try {
-        setIsLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/images/liked-by-user`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }).finally(() => {
-          setIsLoading(false);
-        });
+        setIsLoading(true);        
+        const response = await api.get('/images/liked-by-user');
         setImages(response.data);
       } catch (error) {
         console.error('Error fetching liked images:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     if(activeTab === 0) {
@@ -132,16 +121,13 @@ const ProfileScreen: React.FC = () => {
     } else {
       fetchLikedImages();
     }
-  }, [activeTab, authToken]);
+  }, [activeTab]);
 
   
   const handleDeleteImage = async (image: Image) => {
     try {
-      setIsLoading(true)
-      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/images/${image.id}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-    
+      setIsLoading(true);
+      await api.delete(`/images/${image.id}`);
       setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
       setSelectedImage(null);
     } catch (error) {
@@ -153,25 +139,19 @@ const ProfileScreen: React.FC = () => {
 
   const unlikeImage = async (image: Image) => {
     try {
-      setIsLoading(true)
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/unlike`, {
+      setIsLoading(true);
+    
+      await api.post('/likes/unlike', {
         imageId: image.id,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      .then(() => {
-        setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
-      })    
-      .finally(() => {
-        setIsLoading(false);
-        setSelectedImage(null);
       });
+    
+      setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
     } catch (error) {
       console.error('Error unliking the image:', error);
-    }
+    } finally {
+      setIsLoading(false);
+      setSelectedImage(null);
+    }    
   };
   
   return (
@@ -210,7 +190,7 @@ const ProfileScreen: React.FC = () => {
             position: 'fixed', 
             width: '100%',
             bottom: 0,
-            zIndex: 1000,
+            zIndex: 1,
             border: 0
           }}
         >
@@ -239,7 +219,6 @@ const ProfileScreen: React.FC = () => {
               }
             }}
             setIsLoading={setIsLoading}
-            authToken={authToken}
           />
         </Box>
         <Box sx={{ width: '100%' }}>
@@ -341,12 +320,11 @@ const ProfileScreen: React.FC = () => {
           groupInfo={groupInfo}
           onImageUploadSuccess={handleImageUploadSuccess}
           formData={formData}
-          setFormData={setFormData} 
-          setIsLoading={setIsLoading}     
-          authToken={authToken}
+          setFormData={setFormData}
+          setIsLoading={setIsLoading}
         />
       </Box>
-      <LanguageSwitcher authToken={authToken} />
+      <LanguageSwitcher />
     </Box>
   );
 };
