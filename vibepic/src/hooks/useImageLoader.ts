@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { Image } from '../models/Image';
+import { api } from '../api/api';
 
 export const useImageLoader = (
-  endpoint: string,
-  authToken: string
+  endpoint: string
 ) => {
   const [loading, setLoading] = useState(false);
   const [imagesData, setImagesData] = useState<Image[]>([]);
@@ -17,20 +16,21 @@ export const useImageLoader = (
   const getImages = useCallback(
     async (week?: string, mostLiked?: string, groupName?: string) => {
       try {
-        const response = await axios.get(endpoint, {
-          headers: { Authorization: `Bearer ${authToken}` },
+        console.log('mostLiked', mostLiked);
+        const response = await api.get(endpoint, {
           params: {
-            week: week || undefined,
-            mostLiked: mostLiked || undefined,
-            groupName: groupName || undefined
+            week: week,
+            mostLiked: mostLiked,
+            groupName: groupName,
           },
         });
+  
         const images = response.data;
         setImagesData(images);
-        setVisibleImages(images.slice(0, 10));
+        setVisibleImages(images.slice(0, 3));
+  
         const imageIds = images.map((img: Image) => img.id).join(',');
-        const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
-          headers: { Authorization: `Bearer ${authToken}` },
+        const likeStatusResponse = await api.get('/likes/batch-likes-status', {
           params: { imageIds },
         });
         setLikeStatuses(likeStatusResponse.data.likeStatuses);
@@ -38,9 +38,9 @@ export const useImageLoader = (
         console.error('Error fetching images:', error);
       }
     },
-    [authToken, endpoint]
+    [endpoint]
   );
-
+  
   const updateDateFilter = (newDateFilter: string) => {
     if (dateFilter === newDateFilter) {
       setDateFilter('');
@@ -68,15 +68,14 @@ export const useImageLoader = (
     const loadMoreImages = async () => {
       setLoading(true);
       let nextImages: Image[] = [];
-      if (imagesData.length - visibleImages.length >= 10) {
-        nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 10);
+      if (imagesData.length - visibleImages.length >= 3) {
+        nextImages = imagesData.slice(visibleImages.length, visibleImages.length + 3);
       } else {
         nextImages = imagesData.slice(visibleImages.length, imagesData.length);
       }
       setVisibleImages((prev) => [...prev, ...nextImages]);
       const newImageIds = nextImages.map((img) => img.id).join(',');
-      const likeStatusResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/likes/batch-likes-status`, {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const likeStatusResponse = await api.get('/likes/batch-likes-status', {
         params: { imageIds: newImageIds },
       });
       setLikeStatuses((prev) => ({
@@ -94,7 +93,7 @@ export const useImageLoader = (
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, visibleImages.length, imagesData, authToken]);
+  }, [loading, visibleImages.length, imagesData]);
 
   return {
     visibleImages,

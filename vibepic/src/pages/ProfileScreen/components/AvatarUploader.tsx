@@ -4,17 +4,16 @@ import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ActionButtons from '../components/ActionButtons';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../api/api';
 
 interface AvatarUploaderProps {
   userAvatarUrl?: string;
   onAvatarUpdate: (newAvatarUrl: string) => void;
   setIsLoading: (loading: boolean) => void;
-  authToken: string;
 }
 
-const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatarUpdate, setIsLoading, authToken }) => {
+const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatarUpdate, setIsLoading }) => {
   const { t } = useTranslation();
   const cropperRef = useRef<ReactCropperElement>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
@@ -37,11 +36,7 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({ userAvatarUrl, onAvatar
           formData.append('file', blob);
           setIsLoading(true);
           try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/upload-avatar`, formData, {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-              },
-            });
+            const response = await api.post('/users/upload-avatar', formData);
             const data = response.data;
             onAvatarUpdate(data.avatarUrl);
             setAvatarImage(null);

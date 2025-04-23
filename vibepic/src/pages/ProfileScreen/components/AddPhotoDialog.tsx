@@ -12,8 +12,8 @@ import {
 } from '@mui/material';
 import { Group } from '../../../models/Group';
 import ActionButtons from '../components/ActionButtons';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../api/api';
 
 interface AddPhotoDialogProps {
   open: boolean;
@@ -23,7 +23,6 @@ interface AddPhotoDialogProps {
   setIsLoading: (loading: boolean) => void;
   formData: any;
   setFormData: any;
-  authToken: string;
 }
 
 const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
@@ -33,8 +32,7 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
   onImageUploadSuccess,
   setIsLoading,
   formData,
-  setFormData,
-  authToken
+  setFormData
 }) => {
   const { t } = useTranslation();
   const handleInputChange = (field: keyof typeof formData, value: any) => {
@@ -61,12 +59,9 @@ const AddPhotoDialog: React.FC<AddPhotoDialogProps> = ({
     formDataToSend.append('groupId', formData.selectedGroup);
 
     setIsLoading(true);
+  
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/images/upload`, formDataToSend, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const response = await api.post('/images/upload', formDataToSend);
       const data = response.data;
 
       if (data.image) {

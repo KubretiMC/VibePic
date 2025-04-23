@@ -1,3 +1,6 @@
+## [2.3.1] - 2025-04-23
+- replaced all manual authorization headers with a centralized axios instance
+
 ## [2.3.0] - 2024-12-18
 -  translations made across all the app
 

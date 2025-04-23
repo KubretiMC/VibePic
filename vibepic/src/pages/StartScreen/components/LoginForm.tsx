@@ -3,6 +3,7 @@ import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { publicApi } from '../../../api/api';
 
 interface LoginFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -20,15 +21,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
+      const response = await publicApi.post('/auth/login', {
         username,
         password,
-      }).finally(() => {
-        setIsLoading(false);
       });
-    
+
       const { token } = response.data;
-    
+
       localStorage.setItem('token', token);
       navigate('/home');
     } catch (error) {
@@ -37,6 +36,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ setIsLoginModalOpen, setIsLoading
       } else {
         setErrorMessage('ERROR_OCCURED');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

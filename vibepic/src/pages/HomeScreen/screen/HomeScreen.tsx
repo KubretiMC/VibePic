@@ -11,27 +11,23 @@ import { useTranslation } from 'react-i18next';
 const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
   const { isMediumScreen, isSmallScreen } = useBreakpoints();
-  const authToken = localStorage.getItem('token') || ''; 
   const { 
     visibleImages, 
     likeStatuses, 
-    dateFilter, 
     likedFilter,
     isMobileDrawerOpen, 
     updateDateFilter, 
     updateLikeFilter, 
     setIsMobileDrawerOpen 
   } = useImageLoader(
-    `${process.env.REACT_APP_BACKEND_URL}/images`,
-    authToken
+    '/images'
   );
 
   return (
     <Box>
       <Box display="flex">
         {!isSmallScreen || isMobileDrawerOpen ?
-          <DrawerComponent 
-            dateFilter={dateFilter}
+          <DrawerComponent
             likedFilter={likedFilter} 
             updateDateFilter={updateDateFilter} 
             updateLikeFilter={updateLikeFilter} 
@@ -64,7 +60,7 @@ const HomeScreen: React.FC = () => {
               <UserDropdown />
               <Box sx={{ marginBottom: 10 }}>
                 {visibleImages.map((image: Image) => (
-                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} authToken={authToken} />
+                  <UserImage key={image.id} image={image} liked={likeStatuses[image.id] || false} />
                 ))}
               </Box>
             </Box>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { publicApi } from '../../../api/api';
 
 interface RegisterFormProps {
     setIsLoginModalOpen: (isLoginModalOpen: boolean) => void;
@@ -40,24 +41,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoginModalOpen, setIsL
 
     try {
       setIsLoading(true);
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, {
+      await publicApi.post('/auth/register', {
         username,
         email,
         password,
-      }).then(() => {
-        setNotificaitonText('SUCCESSFULLY_REGISTERED')
-        setIsLoginModalOpen(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
+    
+      setNotificaitonText('SUCCESSFULLY_REGISTERED');
+      setIsLoginModalOpen(true);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setErrorMessage(error.response.data.message || 'REGISTRATION_FAILED');
       } else {
         setErrorMessage('ERROR_OCCURED');
       }
-    }
+    } finally {
+      setIsLoading(false);
+    }    
   };
 
   return (

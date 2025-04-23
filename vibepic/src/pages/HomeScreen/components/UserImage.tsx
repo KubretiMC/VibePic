@@ -4,16 +4,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { Image } from '../../../models/Image';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../api/api';
 
 interface UserImageProps {
   image: Image;
   liked: boolean;
-  authToken: string;
 }
 
-const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authToken }) => {
+const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked }) => {
   const { t, i18n } = useTranslation();
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(image.likes);
@@ -24,15 +23,10 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
 
   const likeImage = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/like`, {
+      await api.post('/likes/like', {
         imageId: image.id,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
       });
-
+    
       setLiked(true);
       setLikes(likes + 1);
     } catch (error) {
@@ -42,15 +36,10 @@ const UserImage: React.FC<UserImageProps> = ({ image, liked: initialLiked, authT
 
   const unlikeImage = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/likes/unlike`, {
+      await api.post('/likes/unlike', {
         imageId: image.id,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
       });
-
+    
       setLiked(false);
       setLikes(likes - 1);
     } catch (error) {

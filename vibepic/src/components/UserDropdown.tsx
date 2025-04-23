@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Typography, Menu, MenuItem, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { User } from '../models/User';
 import LoadingComponent from './LoadingComponent';
 import { useTranslation } from 'react-i18next';
+import { api } from '../api/api';
 
 const UserDropdown: React.FC = () => {
   const navigate = useNavigate();
@@ -13,7 +13,6 @@ const UserDropdown: React.FC = () => {
   const [loading, setIsLoading] = useState<boolean>(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User>();
-  const authToken = localStorage.getItem('token') || ''; 
 
   const handleProfileClick = () => {
     navigate('/profile');
@@ -26,21 +25,19 @@ const UserDropdown: React.FC = () => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      try {
-        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/loggedUser`, {
-          headers: { Authorization: `Bearer ${authToken}` }
-        }).then((response) => {
-          setUser(response.data);
-          const language = response.data.language;
-          if(language) {
-            i18n.changeLanguage(language);
-          }
-        }).finally(() => {
-          setIsLoading(false);
-        });
-      } catch (error) {
-        console.error('Error fetching personal images:', error);
+    try {
+      const response = await api.get('/users/loggedUser');
+      setUser(response.data);
+
+      const language = response.data.language;
+      if (language) {
+        i18n.changeLanguage(language);
       }
+    } catch (error) {
+      console.error('Error fetching personal images:', error);
+    } finally {
+      setIsLoading(false);
+    }
     };
     getUserInfo();
   }, []);
