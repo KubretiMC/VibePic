@@ -94,7 +94,8 @@ const DrawerComponent: React.FC<DrawerComponentProps> = ({
             <Typography 
               sx={{
                 fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16, 
-                color: 'white'
+                color: 'white',
+                fontWeight: 'bold'
               }}>
                 {t('HOME')}
             </Typography>

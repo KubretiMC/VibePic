@@ -178,7 +178,13 @@ const ProfileScreen: React.FC = () => {
                   display: 'block',
               }}
             >
-              <Typography sx={{fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, color: 'white', textAlign:'left'}}>
+              <Typography 
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: isLargeScreen ? 24 : isMediumScreen ? 20 : 16, 
+                  color: 'white', 
+                  textAlign:'left'
+                }}>
                   {t('HOME')}
               </Typography>
             </Button>

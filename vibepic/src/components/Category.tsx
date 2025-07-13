@@ -20,7 +20,15 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, i
   return (
     <Accordion elevation={0} sx={{backgroundColor: '#00A2E8'}} defaultExpanded={!!selectedProp}>
         <AccordionSummary expandIcon={<ExpandMoreIcon  sx={{ color: 'white' }} />}>
-            <Typography sx={{ fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16 }} color='white'>{categoryName}</Typography>
+            <Typography 
+                sx={{ 
+                    fontSize: isMobileDrawerOpen ? 60 : isLargeScreen ? 24 : isMediumScreen ? 20 : 16 
+                }} 
+                fontWeight={'bold'}
+                color='white'
+            >
+                {categoryName}
+            </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ paddingTop: 0 }}>
         {items.map((category, key) => (
@@ -35,7 +43,7 @@ const Category: React.FC<CategoryProps> = ({ categoryName, items, onItemClick, i
             >
                 <Typography 
                     sx={{ 
-                        fontSize: isMobileDrawerOpen ? 32 : 18, 
+                        fontSize: isMobileDrawerOpen ? 32 : isLargeScreen ? 18 : 16, 
                         textAlign: 'left', 
                         width: '100%', 
                         color: 'white', 
