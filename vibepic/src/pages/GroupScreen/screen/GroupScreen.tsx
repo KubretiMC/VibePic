@@ -174,7 +174,7 @@ const GroupScreen: React.FC = () => {
                     No images found
                   </Box>
                 }
-                <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
+                <NotificationComponent notificationText={t(`${notificationText}`)} setNotificationText={setNotificaitonText}/>
             </Box>
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="80vh">

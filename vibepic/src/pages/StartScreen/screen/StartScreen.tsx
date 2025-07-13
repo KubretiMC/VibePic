@@ -10,8 +10,10 @@ import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from '../../../models/JwtPayload';
 import LoadingComponent from '../../../components/LoadingComponent';
 import NotificationComponent from '../../../components/NotificationComponent';
+import { useTranslation } from 'react-i18next';
 
 const StartScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(true);
@@ -69,7 +71,7 @@ const StartScreen: React.FC = () => {
       {isLoading && (
         <LoadingComponent />
       )}
-      <NotificationComponent notificationText={notificationText} setNotificationText={setNotificaitonText}/>
+      <NotificationComponent notificationText={t(`${notificationText}`)} setNotificationText={setNotificaitonText}/>
     </Box>
   );
 };
